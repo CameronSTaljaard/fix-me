@@ -12,6 +12,7 @@ public class Router {
 
 		System.out.println("Waiting for connection on port 5001");
 		while (true) {
+			// Code will stop here until a connection is made. Similar to waiting for user input.
 			clientSocket = marketSocket.accept();
 			System.out.println("Connection made");
 		}
