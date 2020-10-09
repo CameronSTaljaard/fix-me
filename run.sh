@@ -1,0 +1,1 @@
+java -jar ./router/target/fixme-router-1.0-SNAPSHOT.jar
