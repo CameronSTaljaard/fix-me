@@ -17,14 +17,12 @@ public class Router {
 		while(true){
 			String str = dataInputStream.readUTF();
 		
-			System.out.println("broker = "+str);
+			System.out.println("broker = " + str);
 			System.out.println(ss.getPort());
-			if(ss.getPort()== 5000){
-				System.out.println("broker = "+str);
-
-			}else if(ss.getPort()== 5001){
-				System.out.println("Market = "+str);
-
+			if(ss.getPort()== 5000) {
+				System.out.println("Broker = " + str);
+			}else if(ss.getPort()== 5001) {
+				System.out.println("Market = " + str);
 			}
 			if(str.equalsIgnoreCase("exit"))
 				break;
