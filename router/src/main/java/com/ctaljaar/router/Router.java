@@ -6,21 +6,30 @@ import java.net.Socket;
 
 public class Router {
 
-	public static void main(String[] arg) throws IOException{
-		ServerSocket marketSocket = new ServerSocket(5001);
-		Socket clientSocket;
+	public static void main(String[] arg) throws Exception {
 
-		// int activeConnections = 0;
+		int port = 5000;
+		ServerSocket serverSocket = new ServerSocket(port);
+		Socket ss = serverSocket.accept();
+		System.out.println("connected");
+		DataInputStream dataInputStream = new DataInputStream(ss.getInputStream());
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		while(true){
+			String str = dataInputStream.readUTF();
+		
+			System.out.println("broker = "+str);
+			System.out.println(ss.getPort());
+			if(ss.getPort()== 5000){
+				System.out.println("broker = "+str);
 
-		System.out.println("Waiting for connection on port 5001");
-		while (true) {
-			// Code will stop here until a connection is made. Similar to waiting for user input.
-			clientSocket = marketSocket.accept();
-			System.out.println("Connection made");
+			}else if(ss.getPort()== 5001){
+				System.out.println("Market = "+str);
 
-			// Just code to test that multiple connections are accepted.
-			// activeConnections++;
-			// System.out.println("Connections made: " + activeConnections);
+			}
+			if(str.equalsIgnoreCase("exit"))
+				break;
 		}
+		ss.close();
+
 	}
 }
