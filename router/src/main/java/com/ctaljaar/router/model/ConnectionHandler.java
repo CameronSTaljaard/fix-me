@@ -1,6 +1,5 @@
 package com.ctaljaar.router.model;
 
-import java.nio.charset.Charset;
 import java.util.Random;
 import java.lang.StringBuilder;
 
