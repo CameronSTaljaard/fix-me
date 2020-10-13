@@ -1,11 +1,10 @@
-package com.ctaljaar.router;
+package com.ctaljaar.router.broker;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import com.ctaljaar.router.ServerThread;
 
 public class BrokerListener implements Runnable {
 	int brokerPort = 5000;

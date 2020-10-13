@@ -31,7 +31,6 @@ public class ServerThread extends Thread {
 			while (true) {
 				brokerMessage = brokerInput.readLine(); // BufferedReader reads the message that was sent by the Broker
 				System.out.println("Broker message = " + brokerMessage);
-
 				// if the Broker send 'exit' then the thread will end
 				if (brokerMessage.equalsIgnoreCase("exit")) {
 					// Removes this broker from the online brokers

@@ -1,10 +1,12 @@
-package com.ctaljaar.router;
+package com.ctaljaar.router.broker;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import com.ctaljaar.router.model.RouterUtil;
+import com.ctaljaar.router.Router;
 
 /*You have to use Thread to make a new Thread each instance of this class 
 because Runnable only makes one Thread
@@ -16,7 +18,6 @@ public class BrokerThread extends Thread {
 
 	public BrokerThread(Socket brokerSocket) {
 		this.brokerSocket = brokerSocket;
-		// this.marketSocket = marketSocket;
 	}
 
 	@Override
