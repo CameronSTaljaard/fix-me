@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.ctaljaar.router.ServerThread;
-
 public class BrokerListener implements Runnable {
 	int brokerPort = 5000;
 	
@@ -18,8 +16,8 @@ public class BrokerListener implements Runnable {
 				Socket brokerSocket = brokerServerSocket.accept();
 				System.out.println("New Broker joined");
 				//Creates a new Thread for the Broker
-				new ServerThread(brokerSocket).start();
-				if(brokerSocket.isClosed()){
+				new BrokerThread(brokerSocket).start();
+				if (brokerSocket.isClosed()){
 					brokerServerSocket.close();
 				}
 			}

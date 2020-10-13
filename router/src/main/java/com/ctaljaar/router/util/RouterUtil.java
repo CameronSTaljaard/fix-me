@@ -1,4 +1,4 @@
-package com.ctaljaar.router.model;
+package com.ctaljaar.router.util;
 
 import java.util.Random;
 import java.lang.StringBuilder;

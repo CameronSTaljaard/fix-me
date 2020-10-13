@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.ctaljaar.router.ServerThread;
-
 public class MarketListener implements Runnable {
 	int marketPort = 5001;
 	
@@ -17,8 +15,7 @@ public class MarketListener implements Runnable {
 				//Makes connection with the new broker socket
 				Socket marketSocket = marketServerSocket.accept();
 				System.out.println("New Market joined");
-				//Creates a new Thread for the Broker
-				new ServerThread(marketSocket).start();
+				new MarketThread(marketSocket).start();
 				if (marketSocket.isClosed()) {
 					marketServerSocket.close();
 				}
