@@ -10,7 +10,6 @@ public class Broker {
 		int port = 5000;
 		Socket brokerSocket = new Socket(ip, port);
 		PrintWriter outputStream = new PrintWriter(brokerSocket.getOutputStream(), true);
-
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		while (true) {
@@ -21,6 +20,5 @@ public class Broker {
 				break;
 		}
 		brokerSocket.close();
-
 	}
 }
