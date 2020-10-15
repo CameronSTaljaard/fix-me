@@ -6,8 +6,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.ctaljaar.router.util.Connection;
-import com.ctaljaar.router.util.RouterUtil;
+import com.ctaljaar.router.util.*;
 import com.ctaljaar.router.Router;
 
 /*You have to use Thread to make a new Thread each instance of this class 
@@ -17,7 +16,7 @@ public class BrokerThread extends Thread {
 
 	Socket brokerSocket;
 	ServerSocket marketServerSocket;
-
+	public static Connection thisBroker;
 	public BrokerThread(Socket brokerSocket) {
 		this.brokerSocket = brokerSocket;
 	}
@@ -29,7 +28,7 @@ public class BrokerThread extends Thread {
 			// BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 			String brokerID = RouterUtil.generateID();
-			Connection thisBroker = new Connection(brokerSocket, brokerID);
+			thisBroker = new Connection(brokerSocket, brokerID);
 			// Adds the New Broker to the List of online Brokers
 			System.out.println("Broker joined with ID: " + brokerID);
 			Router.onlineBrokers.add(thisBroker);
@@ -38,22 +37,13 @@ public class BrokerThread extends Thread {
 			String brokerMessage;
 			while (true) {
 				brokerMessage = brokerInput.readLine();
-				if(brokerMessage != null){
-				if (brokerMessage.equalsIgnoreCase("list")) {
-					for (Connection connection : Router.onlineBrokers) {
-						// Send the data to the Broker
-						outputStream.println("Broker: " + connection);
-					}
-					// Sends this to the Broker if all the Online Brokers have been sent
-					outputStream.println("End of list");
-				} else if (brokerMessage.equalsIgnoreCase("exit")) {
-					// Removes this broker from the online brokers
-					removeBrokerFromOnlineList(thisBroker);
-					break;
-				} else {
-						System.out.println("Broker message = " + brokerMessage);
+				if (brokerMessage != null) {
+					//Check what the Broker has send
+					BrokerThreadUtil.checkBrokerMessage(brokerMessage,outputStream);
 				}
-			}
+				if(thisBroker == null){
+					break;
+				}
 			}
 			brokerSocket.close();
 		} catch (Exception e) {
@@ -61,9 +51,5 @@ public class BrokerThread extends Thread {
 		}
 	}
 
-	void removeBrokerFromOnlineList(Connection thisBroker) {
-		int index = Router.onlineBrokers.indexOf(thisBroker);
-		Router.onlineBrokers.remove(index);
-		System.out.println(Router.onlineBrokers);
-	}
+
 }

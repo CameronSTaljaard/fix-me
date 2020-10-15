@@ -2,7 +2,8 @@ package com.ctaljaar.router.broker;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
+
+import com.ctaljaar.router.Router;
 
 public class BrokerListener implements Runnable {
 	int brokerPort = 5000;
@@ -13,11 +14,11 @@ public class BrokerListener implements Runnable {
 			ServerSocket brokerServerSocket = new ServerSocket(brokerPort);
 			while (true) {
 				//Makes connection with the new broker socket
-				Socket brokerSocket = brokerServerSocket.accept();
+				Router.brokerSocket = brokerServerSocket.accept();
 				System.out.println("New Broker joined");
 				//Creates a new Thread for the Broker
-				new BrokerThread(brokerSocket).start();
-				if (brokerSocket.isClosed()){
+				new BrokerThread(Router.brokerSocket).start();
+				if (Router.brokerSocket.isClosed()){
 					brokerServerSocket.close();
 				}
 			}
