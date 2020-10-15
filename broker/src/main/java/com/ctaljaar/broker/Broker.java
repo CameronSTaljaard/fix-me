@@ -16,15 +16,12 @@ public class Broker {
 		BufferedReader routerInput = new BufferedReader(new InputStreamReader(brokerSocket.getInputStream()));
 		while (true) {
 			readLine = terminalInput.readLine();
-			outputStream.println(readLine);// Sends the input of the Broker
-			// if the Broker sends 'list' then Router will send all the online Brokers
-			if (readLine.equalsIgnoreCase("list")) {
-				//Prints the Online Brokers
-				BrokerUtil.printOnlineBrokers(routerInput);
-			}
+			// checks what the broker has input on the terminal
+			BrokerUtil.checkBrokerMessage(readLine, outputStream, routerInput);
 			// if the Broker sends 'exit' then this Socket will close
 			if (readLine.equalsIgnoreCase("exit"))
 				break;
+
 		}
 		brokerSocket.close();
 	}
