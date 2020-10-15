@@ -25,6 +25,9 @@ public class BrokerThread extends Thread {
 	@Override
 	public void run() {
 		try {
+			PrintWriter outputStream = new PrintWriter(brokerSocket.getOutputStream(), true);
+			// BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
 			String brokerID = RouterUtil.generateID();
 			Connection thisBroker = new Connection(brokerSocket, brokerID);
 			// Adds the New Broker to the List of online Brokers
@@ -35,16 +38,17 @@ public class BrokerThread extends Thread {
 			String brokerMessage;
 			while (true) {
 				brokerMessage = brokerInput.readLine();
-				System.out.println("Broker message = " + brokerMessage);
 				if (brokerMessage.equalsIgnoreCase("list")) {
-					System.out.println("Connected brokers:");
-					for(Connection connection : Router.onlineBrokers)
-						System.out.println("Broker: " + connection); 
-				}
-				if (brokerMessage.equalsIgnoreCase("exit")) {
+					for (Connection connection : Router.onlineBrokers) {
+						// Send the data to the Broker
+						outputStream.println(connection);
+					}
+				} else if (brokerMessage.equalsIgnoreCase("exit")) {
 					// Removes this broker from the online brokers
 					removeBrokerFromOnlineList(thisBroker);
 					break;
+				} else {
+					System.out.println("Broker message = " + brokerMessage);
 				}
 			}
 			brokerSocket.close();
