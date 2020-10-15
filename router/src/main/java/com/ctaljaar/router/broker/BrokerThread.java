@@ -38,18 +38,22 @@ public class BrokerThread extends Thread {
 			String brokerMessage;
 			while (true) {
 				brokerMessage = brokerInput.readLine();
+				if(brokerMessage != null){
 				if (brokerMessage.equalsIgnoreCase("list")) {
 					for (Connection connection : Router.onlineBrokers) {
 						// Send the data to the Broker
-						outputStream.println(connection);
+						outputStream.println("Broker: " + connection);
 					}
+					// Sends this to the Broker if all the Online Brokers have been sent
+					outputStream.println("End of list");
 				} else if (brokerMessage.equalsIgnoreCase("exit")) {
 					// Removes this broker from the online brokers
 					removeBrokerFromOnlineList(thisBroker);
 					break;
 				} else {
-					System.out.println("Broker message = " + brokerMessage);
+						System.out.println("Broker message = " + brokerMessage);
 				}
+			}
 			}
 			brokerSocket.close();
 		} catch (Exception e) {
