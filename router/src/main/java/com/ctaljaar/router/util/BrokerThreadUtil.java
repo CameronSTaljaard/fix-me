@@ -28,7 +28,7 @@ public class BrokerThreadUtil {
             outputStream.println("End of list");
         } else if (brokerMessage.equalsIgnoreCase("buy")) {
             ArrayList<String> fixMessage = new ArrayList<>();
-
+            fixMessage.add("BrokerID: "+BrokerThread.thisBroker.uniqueID);
             for (int i = 0; i < 4; i++) {
                 String fixMessageInfo = brokerInput.readLine();
                 fixMessage.add(fixMessageInfo);
@@ -36,7 +36,7 @@ public class BrokerThreadUtil {
             // To get just the marketID
 
             // String marketID = fixMessage.get(2).split(" ");
-            sendFixMessageToMarket(getMarketID(fixMessage.get(0)), fixMessage);
+            sendFixMessageToMarket(getMarketID(fixMessage.get(1)), fixMessage);
 
         } else if (brokerMessage.equalsIgnoreCase("exit")) {
             // Removes this broker from the online brokers
@@ -62,7 +62,7 @@ public class BrokerThreadUtil {
                     PrintWriter outputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
                     // Send Query to the Market to tell it that you have a Query coming through
                     outputStream.println("Query");
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < 5; i++) {
                         // Send the broker Fix message to the market
                         outputStream.println(fixMessage.get(i));
                     }

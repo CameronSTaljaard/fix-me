@@ -73,7 +73,7 @@ public class BrokerUtil {
 
     public static void checkBrokerMessage(String readLine, PrintWriter outputStream, BufferedReader routerInput,
             BufferedReader terminalInput) throws IOException {
-     
+
         outputStream.println(readLine);// Sends the input of the Broker
 
         if (readLine.contains("buy")) {
@@ -84,6 +84,10 @@ public class BrokerUtil {
         if (readLine.equalsIgnoreCase("list")) {
             // Prints the Online Brokers
             BrokerUtil.printOnlineBrokers(routerInput);
+        }
+        if (routerInput.readLine().equalsIgnoreCase("Order")) {
+            // Prints outcome of the Order for testing
+            System.out.println(routerInput.readLine());
         }
         if (readLine.equalsIgnoreCase("markets")) {
             // Prints the Online Brokers

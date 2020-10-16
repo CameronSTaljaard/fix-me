@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import com.ctaljaar.router.util.RouterUtil;
 import com.ctaljaar.router.Router;
 import com.ctaljaar.router.util.Connection;
+import com.ctaljaar.router.util.MarketThreadUtil;
 import com.ctaljaar.router.util.MarketUtil;
 
 /*You have to use Thread to make a new Thread each instance of this class 
@@ -50,17 +51,19 @@ public class MarketThread extends Thread {
 
 						ArrayList<String> fixMessage = new ArrayList<>();
 
-						for (int i = 0; i < 4; i++) {
+						for (int i = 0; i < 5; i++) {
 							//add fix message from market to an arrayList
 							String info = marketInput.readLine();
 							fixMessage.add(info);
 							System.out.println(info);
 						}
+						MarketThreadUtil.checkFixMessage(fixMessage);
+
 						// The market has the broker message now so do error checking here
 
 					} else if (marketMessage.equalsIgnoreCase("exit")) {
 						// Removes this broker from the online brokers
-						removeMarketFromOnlineList(thisMarket);
+						MarketThreadUtil.removeMarketFromOnlineList(thisMarket);
 						break;
 					}
 				}
@@ -72,9 +75,5 @@ public class MarketThread extends Thread {
 		}
 	}
 
-	void removeMarketFromOnlineList(MarketUtil thisMarket) {
-		int index = Router.onlineMarkets.indexOf(thisMarket);
-		Router.onlineMarkets.remove(index);
-		System.out.println(Router.onlineMarkets);
-	}
+	
 }
