@@ -76,7 +76,7 @@ public class BrokerUtil {
 
         outputStream.println(readLine);// Sends the input of the Broker
 
-        if (readLine.contains("buy")) {
+        if (readLine.contains("buy")||readLine.contains("sell")) {
             ArrayList<String> fixMessage = BrokerUtil.printFixMessageOrder(terminalInput);
             sendFixMessage(outputStream, fixMessage);
         }

@@ -22,25 +22,43 @@ public class MarketThreadUtil {
          * 
          * 
          */
-        Boolean error = false;
-        String brokerID[] = fixMessage.get(0).split(" ");
-        String instrument = fixMessage.get(1);
-        String quantity = fixMessage.get(2);
-        String market = fixMessage.get(3);
-        String price = fixMessage.get(4);
-
-        while (!error) {
-
-            error = checkInstrument(instrument);
-            if (error) {
-                sendFixMessageToBroker(brokerID[1], error);
-                break;
-            }
-            sendFixMessageToBroker(brokerID[1], error);
-            break;
-
+        // Loop through all the functions and breaks if there is an error
+        for (int i = 0; i < 2; i++) {
+            i = errorCheck(i, fixMessage);
         }
 
+    }
+
+    public static int errorCheck(int i, ArrayList<String> fixMessage) throws IOException {
+        Boolean error = false;
+        String brokerID[] = fixMessage.get(0).split(" ");
+        String action = fixMessage.get(1);
+        String instrument = fixMessage.get(2);
+        String quantity = fixMessage.get(3);
+        String market = fixMessage.get(4);
+        String price = fixMessage.get(5);
+
+        switch (i) {
+            case 0:
+                error = checkInstrument(instrument);
+                break;
+            case 1:
+                error = checkSum(instrument, quantity, action);
+                break;
+
+            default:
+                System.out.println("Something went wrong!");
+                break;
+        }
+        if (error) {
+            sendFixMessageToBroker(brokerID[1], error);
+            return i = 2;
+        }
+        if (i == 1) {
+            sendFixMessageToBroker(brokerID[1], error);
+
+        }
+        return i;
     }
 
     // Check if the instrument is in the market
@@ -53,11 +71,26 @@ public class MarketThreadUtil {
         return true;
     }
 
+    // Check if the broker quantity is more than the market quantity
+    public static Boolean checkSum(String instrument, String quantity, String action) {
+        String quantityValue[] = quantity.split(" ");
+        for (MarketUtil markets : Router.onlineMarketsInfo) {
+            if (instrument.equalsIgnoreCase(markets.stockName)) {
+                int quantityInt = Integer.parseInt(quantityValue[1]);
+                if (quantityInt < markets.quantity) {
+                    markets.updateQuanity(quantityInt, action);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     static void sendFixMessageToBroker(String brokerID, Boolean error) throws IOException {
         if (brokerID != null) {
             for (Connection broker : Router.onlineBrokers) {
                 // Get the onlineBroker connections
-                if (broker.uniqueID.equals(brokerID)) {
+                if (broker.uniqueID.equalsIgnoreCase(brokerID)) {
                     // Get that socket connection of the Broker you want
                     PrintWriter outputStream = new PrintWriter(broker.activeSocket.getOutputStream(), true);
                     // Send 'Order' to the Broker to tell it that you have the outcome of the Order
@@ -66,7 +99,6 @@ public class MarketThreadUtil {
                     // Market sends outcome to the Broker
                     if (error == true) {
                         outputStream.println("Rejected");
-
                     } else {
                         outputStream.println("Executed");
                     }

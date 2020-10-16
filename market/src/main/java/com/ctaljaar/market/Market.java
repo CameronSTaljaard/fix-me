@@ -27,7 +27,7 @@ public class Market {
 				 // Send Query to the Router to tell it that you have a Query coming through
 				outputStream.println("Query");
 				//Send fix message back to router
-				for (int i = 0; i < 5; i++)
+				for (int i = 0; i < 6; i++)
 					outputStream.println(inputStream.readLine());
 				System.out.println("Market has got the query from the broker");
 
