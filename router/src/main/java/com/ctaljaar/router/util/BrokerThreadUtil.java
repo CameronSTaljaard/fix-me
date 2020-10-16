@@ -32,7 +32,6 @@ public class BrokerThreadUtil {
             for (int i = 0; i < 4; i++) {
                 String fixMessageInfo = brokerInput.readLine();
                 fixMessage.add(fixMessageInfo);
-                System.out.println(fixMessageInfo);
             }
             // To get just the marketID
             String marketID[] = fixMessage.get(2).split(" ");

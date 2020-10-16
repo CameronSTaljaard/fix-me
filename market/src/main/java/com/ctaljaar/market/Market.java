@@ -23,13 +23,12 @@ public class Market {
 		while (true) {
 			String routerMessage = inputStream.readLine();
 
-			//Get the Fix message from the BrokerThread
+			// Get the Fix message from the BrokerThread
 			if (routerMessage.equalsIgnoreCase("Query")) {
-				ArrayList<String> fixMessage = new ArrayList<>();
-
+				outputStream.println("Query");
+				//Send fix message back to router
 				for (int i = 0; i < 4; i++)
-					fixMessage.add(inputStream.readLine());
-				// The market has the broker message now so do error checking here
+					outputStream.println(inputStream.readLine());
 				System.out.println("Market has got the query from the broker");
 
 			}

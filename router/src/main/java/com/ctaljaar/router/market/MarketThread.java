@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import com.ctaljaar.router.util.RouterUtil;
 import com.ctaljaar.router.Router;
@@ -46,7 +47,16 @@ public class MarketThread extends Thread {
 						// Adds the instance to the onlineMarketInfo array
 						Router.onlineMarketsInfo.add(thisMarket);
 					} else if (marketMessage.equalsIgnoreCase("Query")) {
-						//Return if the query was accepted or rejected here
+
+						ArrayList<String> fixMessage = new ArrayList<>();
+
+						for (int i = 0; i < 4; i++) {
+							//add fix message from market to an arrayList
+							String info = marketInput.readLine();
+							fixMessage.add(info);
+							System.out.println(info);
+						}
+						// The market has the broker message now so do error checking here
 
 					} else if (marketMessage.equalsIgnoreCase("exit")) {
 						// Removes this broker from the online brokers
