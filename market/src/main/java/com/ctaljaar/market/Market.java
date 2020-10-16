@@ -2,7 +2,6 @@ package com.ctaljaar.market;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class Market {
 	public static void main(String[] args) throws Exception {
@@ -17,7 +16,7 @@ public class Market {
 
 		System.out.println("What is the market type?");
 		readLine = terminalInput.readLine();
-		outputStream.println("Stock: " + readLine);
+		outputStream.println("Instrument: " + readLine);
 		System.out.println("Thank you!");
 
 		while (true) {
@@ -25,6 +24,7 @@ public class Market {
 
 			// Get the Fix message from the BrokerThread
 			if (routerMessage.equalsIgnoreCase("Query")) {
+				 // Send Query to the Router to tell it that you have a Query coming through
 				outputStream.println("Query");
 				//Send fix message back to router
 				for (int i = 0; i < 4; i++)

@@ -41,7 +41,7 @@ public class MarketThread extends Thread {
 			while (true) {
 				marketMessage = marketInput.readLine();
 				if (marketMessage != null) {
-					if (marketMessage.contains("Stock")) {
+					if (marketMessage.contains("Instrument")) {
 						// Creates the market info
 						thisMarket = new MarketUtil(marketID, marketMessage);
 						// Adds the instance to the onlineMarketInfo array

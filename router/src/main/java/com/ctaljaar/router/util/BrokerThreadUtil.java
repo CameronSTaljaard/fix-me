@@ -34,8 +34,9 @@ public class BrokerThreadUtil {
                 fixMessage.add(fixMessageInfo);
             }
             // To get just the marketID
-            String marketID[] = fixMessage.get(2).split(" ");
-            sendFixMessageToMarket(marketID[1],fixMessage);
+
+            // String marketID = fixMessage.get(2).split(" ");
+            sendFixMessageToMarket(getMarketID(fixMessage.get(0)), fixMessage);
 
         } else if (brokerMessage.equalsIgnoreCase("exit")) {
             // Removes this broker from the online brokers
@@ -52,20 +53,32 @@ public class BrokerThreadUtil {
         System.out.println(Router.onlineBrokers);
     }
 
-    static void sendFixMessageToMarket(String marketID,ArrayList<String> fixMessage) throws IOException {
-        for (Connection markets : Router.onlineMarkets) {
-            // Get the onlineMarket connections
-            if (markets.uniqueID.equals(marketID)) {
-                // Get that socket connection of the market you want
-                PrintWriter outputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
-                // Send Query to the Market to tell it that you have a Query coming through
-                outputStream.println("Query");
-                for (int i = 0; i < 4; i++) {
-                    // Send the broker Fix message to the market
-                    outputStream.println(fixMessage.get(i));
-                }
+    static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage) throws IOException {
+        if (marketID != null) {
+            for (Connection markets : Router.onlineMarkets) {
+                // Get the onlineMarket connections
+                if (markets.uniqueID.equals(marketID)) {
+                    // Get that socket connection of the market you want
+                    PrintWriter outputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
+                    // Send Query to the Market to tell it that you have a Query coming through
+                    outputStream.println("Query");
+                    for (int i = 0; i < 4; i++) {
+                        // Send the broker Fix message to the market
+                        outputStream.println(fixMessage.get(i));
+                    }
 
+                }
             }
         }
+    }
+
+    static String getMarketID(String instrument) {
+        // Loops through the markets to get the ID of the instrument
+        for (MarketUtil markets : Router.onlineMarketsInfo) {
+            if (instrument.equalsIgnoreCase(markets.stockName)) {
+                return markets.uniqueID;
+            }
+        }
+        return null;
     }
 }
