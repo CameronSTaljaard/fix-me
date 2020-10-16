@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import com.ctaljaar.router.util.RouterUtil;
 import com.ctaljaar.router.Router;
+import com.ctaljaar.router.util.Connection;
 import com.ctaljaar.router.util.MarketUtil;
 
 /*You have to use Thread to make a new Thread each instance of this class 
@@ -28,7 +29,9 @@ public class MarketThread extends Thread {
 			MarketUtil thisMarket = null;
 			String marketID = RouterUtil.generateID();
 			System.out.println("Market joined with ID: " + marketID);
-			// Connection thisMarket = new Connection(marketSocket, marketID);
+			Connection thisMarketID = new Connection(marketSocket, marketID);
+			// Adds this market ID to the online Markets
+			Router.onlineMarkets.add(thisMarketID);
 			BufferedReader marketInput = new BufferedReader(new InputStreamReader(marketSocket.getInputStream()));
 			PrintWriter outputStream = new PrintWriter(marketSocket.getOutputStream(), true);
 
@@ -38,11 +41,14 @@ public class MarketThread extends Thread {
 				marketMessage = marketInput.readLine();
 				if (marketMessage != null) {
 					if (marketMessage.contains("Stock")) {
+						// Creates the market info
 						thisMarket = new MarketUtil(marketID, marketMessage);
-						Router.onlineMarkets.add(thisMarket);
-					}
+						// Adds the instance to the onlineMarketInfo array
+						Router.onlineMarketsInfo.add(thisMarket);
+					} else if (marketMessage.equalsIgnoreCase("Query")) {
+						//Return if the query was accepted or rejected here
 
-					if (marketMessage.equalsIgnoreCase("exit")) {
+					} else if (marketMessage.equalsIgnoreCase("exit")) {
 						// Removes this broker from the online brokers
 						removeMarketFromOnlineList(thisMarket);
 						break;
@@ -57,8 +63,8 @@ public class MarketThread extends Thread {
 	}
 
 	void removeMarketFromOnlineList(MarketUtil thisMarket) {
-	int index = Router.onlineMarkets.indexOf(thisMarket);
-	Router.onlineMarkets.remove(index);
-	System.out.println(Router.onlineMarkets);
+		int index = Router.onlineMarkets.indexOf(thisMarket);
+		Router.onlineMarkets.remove(index);
+		System.out.println(Router.onlineMarkets);
 	}
 }

@@ -8,6 +8,7 @@ import com.ctaljaar.broker.util.BrokerUtil;
 public class Broker {
 	public static void main(String[] args) throws Exception {
 		String readLine;
+		
 		String ip = "localhost";
 		int port = 5000;
 		Socket brokerSocket = new Socket(ip, port);
@@ -16,8 +17,9 @@ public class Broker {
 		BufferedReader routerInput = new BufferedReader(new InputStreamReader(brokerSocket.getInputStream()));
 		while (true) {
 			readLine = terminalInput.readLine();
+		
 			// checks what the broker has input on the terminal
-			BrokerUtil.checkBrokerMessage(readLine, outputStream, routerInput);
+			BrokerUtil.checkBrokerMessage(readLine, outputStream, routerInput,terminalInput);
 			// if the Broker sends 'exit' then this Socket will close
 			if (readLine.equalsIgnoreCase("exit"))
 				break;

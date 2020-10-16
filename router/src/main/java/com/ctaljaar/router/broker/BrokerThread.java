@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import com.ctaljaar.router.util.*;
 import com.ctaljaar.router.Router;
 
@@ -17,6 +16,7 @@ public class BrokerThread extends Thread {
 	Socket brokerSocket;
 	ServerSocket marketServerSocket;
 	public static Connection thisBroker;
+
 	public BrokerThread(Socket brokerSocket) {
 		this.brokerSocket = brokerSocket;
 	}
@@ -24,6 +24,7 @@ public class BrokerThread extends Thread {
 	@Override
 	public void run() {
 		try {
+
 			PrintWriter outputStream = new PrintWriter(brokerSocket.getOutputStream(), true);
 			// BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -33,15 +34,16 @@ public class BrokerThread extends Thread {
 			System.out.println("Broker joined with ID: " + brokerID);
 			Router.onlineBrokers.add(thisBroker);
 			// Reads the brokers input on the terminal
+
 			BufferedReader brokerInput = new BufferedReader(new InputStreamReader(brokerSocket.getInputStream()));
 			String brokerMessage;
 			while (true) {
 				brokerMessage = brokerInput.readLine();
 				if (brokerMessage != null) {
-					//Check what the Broker has send
-					BrokerThreadUtil.checkBrokerMessage(brokerMessage,outputStream);
+					// Check what the Broker has send
+					BrokerThreadUtil.checkBrokerMessage(brokerMessage, outputStream, brokerInput);
 				}
-				if(thisBroker == null){
+				if (thisBroker == null) {
 					break;
 				}
 			}
@@ -50,6 +52,4 @@ public class BrokerThread extends Thread {
 			System.out.println(e);
 		}
 	}
-
-
 }

@@ -10,7 +10,8 @@ import com.ctaljaar.router.util.*;
 public class Router {
 
 	public static ArrayList<Connection> onlineBrokers = new ArrayList<>();
-	public static ArrayList<MarketUtil> onlineMarkets = new ArrayList<>();
+	public static ArrayList<Connection> onlineMarkets = new ArrayList<>();
+	public static ArrayList<MarketUtil> onlineMarketsInfo = new ArrayList<>();
 	public static Socket brokerSocket, marketSocket;
 
 	public static void main(String[] arg) throws Exception {
