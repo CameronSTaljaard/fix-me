@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import com.ctaljaar.router.Router;
+import com.ctaljaar.router.model.RouterGlobals;
 import com.ctaljaar.router.broker.BrokerThread;
 
 public class BrokerThreadUtil {
@@ -13,14 +13,14 @@ public class BrokerThreadUtil {
     public static void checkBrokerMessage(String brokerMessage, PrintWriter outputStream, BufferedReader brokerInput)
             throws IOException {
         if (brokerMessage.equalsIgnoreCase("list")) {
-            for (Connection connection : Router.onlineBrokers) {
+            for (Connection connection : RouterGlobals.onlineBrokers) {
                 // Send the data to the Broker
                 outputStream.println("Broker: " + connection);
             }
             // Sends this to the Broker if all the Online Brokers have been sent
             outputStream.println("End of list");
         } else if (brokerMessage.equalsIgnoreCase("markets")) {
-            for (MarketUtil markets : Router.onlineMarketsInfo) {
+            for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
                 // Send the data to the Broker
                 outputStream.println(markets);
             }
@@ -49,14 +49,14 @@ public class BrokerThreadUtil {
     }
 
     static void removeBrokerFromOnlineList(Connection thisBroker) {
-        int index = Router.onlineBrokers.indexOf(thisBroker);
-        Router.onlineBrokers.remove(index);
-        System.out.println(Router.onlineBrokers);
+        int index = RouterGlobals.onlineBrokers.indexOf(thisBroker);
+        RouterGlobals.onlineBrokers.remove(index);
+        System.out.println(RouterGlobals.onlineBrokers);
     }
 
     static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage) throws IOException {
         if (marketID != null) {
-            for (Connection markets : Router.onlineMarkets) {
+            for (Connection markets : RouterGlobals.onlineMarkets) {
                 // Get the onlineMarket connections
                 if (markets.uniqueID.equals(marketID)) {
                     // Get that socket connection of the market you want
@@ -75,7 +75,7 @@ public class BrokerThreadUtil {
 
     static String getMarketID(String instrument) {
         // Loops through the markets to get the ID of the instrument
-        for (MarketUtil markets : Router.onlineMarketsInfo) {
+        for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
             if (instrument.equalsIgnoreCase(markets.stockName)) {
                 return markets.uniqueID;
             }

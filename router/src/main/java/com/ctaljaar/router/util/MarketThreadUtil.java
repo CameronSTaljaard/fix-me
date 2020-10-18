@@ -4,14 +4,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import com.ctaljaar.router.Router;
+import com.ctaljaar.router.model.RouterGlobals;
 
 public class MarketThreadUtil {
 
+	// Very unlikely this works.
+	// Function is attempting to find a Market in a Connection arraylist with a market constructor.
     public static void removeMarketFromOnlineList(MarketUtil thisMarket) {
-        int index = Router.onlineMarkets.indexOf(thisMarket);
-        Router.onlineMarkets.remove(index);
-        System.out.println(Router.onlineMarkets);
+        int index = RouterGlobals.onlineMarkets.indexOf(thisMarket);
+        RouterGlobals.onlineMarkets.remove(index);
+        System.out.println(RouterGlobals.onlineMarkets);
     }
 
     public static void checkFixMessage(ArrayList<String> fixMessage) throws IOException {
@@ -63,7 +65,7 @@ public class MarketThreadUtil {
 
     // Check if the instrument is in the market
     public static Boolean checkInstrument(String instrument) {
-        for (MarketUtil markets : Router.onlineMarketsInfo) {
+        for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
             if (instrument.equalsIgnoreCase(markets.stockName)) {
                 return false;
             }
@@ -74,7 +76,7 @@ public class MarketThreadUtil {
     // Check if the broker quantity is more than the market quantity
     public static Boolean checkSum(String instrument, String quantity, String action) {
         String quantityValue[] = quantity.split(" ");
-        for (MarketUtil markets : Router.onlineMarketsInfo) {
+        for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
             if (instrument.equalsIgnoreCase(markets.stockName)) {
                 int quantityInt = Integer.parseInt(quantityValue[1]);
                 if (quantityInt < markets.quantity) {
@@ -88,7 +90,7 @@ public class MarketThreadUtil {
 
     static void sendFixMessageToBroker(String brokerID, Boolean error) throws IOException {
         if (brokerID != null) {
-            for (Connection broker : Router.onlineBrokers) {
+            for (Connection broker : RouterGlobals.onlineBrokers) {
                 // Get the onlineBroker connections
                 if (broker.uniqueID.equalsIgnoreCase(brokerID)) {
                     // Get that socket connection of the Broker you want

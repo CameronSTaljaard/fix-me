@@ -4,53 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BrokerUtil {
-
-    public static void printOnlineBrokers(BufferedReader routerInput) throws IOException {
-        String routerMessage;
-        System.out.println("-------Connected brokers------");
-        System.out.println("");
-
-        // Reads the data from the router
-        while ((routerMessage = routerInput.readLine()) != null) {
-            if (routerMessage.equalsIgnoreCase("End of list"))
-                break;
-            System.out.println(routerMessage);
-        }
-        System.out.println("");
-        System.out.println("-----------End of list---------");
-    }
-
-    public static void printOnlineMarkets(BufferedReader routerInput) throws IOException {
-        int i = 0;
-        String routerMessage;
-        System.out.println("---------Online Markets-------");
-        System.out.println("");
-
-        // Reads the data from the router
-        while ((routerMessage = routerInput.readLine()) != null) {
-            // Prints a space between the different markets
-            if (i == 7) {
-                System.out.println("");
-                i = 0;
-            }
-
-            if (routerMessage.equalsIgnoreCase("End of list"))
-                break;
-            System.out.println(routerMessage);
-            i++;
-
-        }
-        System.out.println("-----------End of list---------");
-    }
 
     public static ArrayList<String> printFixMessageOrder(BufferedReader terminalInput) throws IOException {
         ArrayList<String> fixMessage = new ArrayList<>();
         // String fixMessage[] = readLine.split(" ");
         System.out.print("\nInstrument: ");
         fixMessage.add(terminalInput.readLine());
-
         System.out.print("\nQuantity: ");
         fixMessage.add(terminalInput.readLine());
         System.out.print("\nMarket: ");
@@ -71,29 +33,36 @@ public class BrokerUtil {
         }
     }
 
-    public static void checkBrokerMessage(String readLine, PrintWriter outputStream, BufferedReader routerInput,
+    public static void runBrokerCommand(String readLine, PrintWriter outputStream, BufferedReader routerInput,
             BufferedReader terminalInput) throws IOException {
 
-        outputStream.println(readLine);// Sends the input of the Broker
-
-        if (readLine.contains("buy")||readLine.contains("sell")) {
-            ArrayList<String> fixMessage = BrokerUtil.printFixMessageOrder(terminalInput);
-            sendFixMessage(outputStream, fixMessage);
+		// Sends the input of the Broker
+		outputStream.println(readLine);
+		
+        if (readLine.contains("buy") || readLine.contains("sell")) {
+			ArrayList<String> fixMessage = BrokerUtil.printFixMessageOrder(terminalInput);
+			sendFixMessage(outputStream, fixMessage);
+			// Prints outcome of the Order for testing
+			if (routerInput.readLine().equalsIgnoreCase("Order")) {
+				System.out.println(routerInput.readLine());
+			}
         }
         // if the Broker sends 'list' then Router will send all the online Brokers
-        if (readLine.equalsIgnoreCase("list")) {
-            // Prints the Online Brokers
-            BrokerUtil.printOnlineBrokers(routerInput);
-        }
-        if (routerInput.readLine().equalsIgnoreCase("Order")) {
-            // Prints outcome of the Order for testing
-            System.out.println(routerInput.readLine());
-        }
-        if (readLine.equalsIgnoreCase("markets")) {
-            // Prints the Online Brokers
-            BrokerUtil.printOnlineMarkets(routerInput);
-
-        }
-    }
-
+        if (readLine.equalsIgnoreCase("brokers")) {
+			// Prints the Online Brokers
+            BrokerPrinting.printOnlineBrokers(routerInput);
+		}
+		if (readLine.equalsIgnoreCase("markets")) {
+			// Prints the Online Brokers
+			BrokerPrinting.printOnlineMarkets(routerInput);
+		}   
+	}
+	
+	public static boolean validCommand(String command) {
+		String validCommands[] = {"buy","sell","brokers","markets"};
+		boolean valid = Arrays.stream(validCommands).anyMatch(command.toLowerCase()::equals);
+		if (valid)
+			return true;
+		return false;
+	}
 }

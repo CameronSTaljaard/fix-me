@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import com.ctaljaar.router.util.RouterUtil;
-import com.ctaljaar.router.Router;
+import com.ctaljaar.router.model.RouterGlobals;
 import com.ctaljaar.router.util.Connection;
 import com.ctaljaar.router.util.MarketThreadUtil;
 import com.ctaljaar.router.util.MarketUtil;
@@ -33,7 +33,7 @@ public class MarketThread extends Thread {
 			System.out.println("Market joined with ID: " + marketID);
 			Connection thisMarketID = new Connection(marketSocket, marketID);
 			// Adds this market ID to the online Markets
-			Router.onlineMarkets.add(thisMarketID);
+			RouterGlobals.onlineMarkets.add(thisMarketID);
 			BufferedReader marketInput = new BufferedReader(new InputStreamReader(marketSocket.getInputStream()));
 			PrintWriter outputStream = new PrintWriter(marketSocket.getOutputStream(), true);
 
@@ -46,7 +46,7 @@ public class MarketThread extends Thread {
 						// Creates the market info
 						thisMarket = new MarketUtil(marketID, marketMessage);
 						// Adds the instance to the onlineMarketInfo array
-						Router.onlineMarketsInfo.add(thisMarket);
+						RouterGlobals.onlineMarketsInfo.add(thisMarket);
 					} else if (marketMessage.equalsIgnoreCase("Query")) {
 
 						ArrayList<String> fixMessage = new ArrayList<>();

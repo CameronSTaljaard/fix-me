@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import com.ctaljaar.router.util.*;
-import com.ctaljaar.router.Router;
+import com.ctaljaar.router.model.RouterGlobals;
 
 /*You have to use Thread to make a new Thread each instance of this class 
 because Runnable only makes one Thread
@@ -32,7 +32,7 @@ public class BrokerThread extends Thread {
 			thisBroker = new Connection(brokerSocket, brokerID);
 			// Adds the New Broker to the List of online Brokers
 			System.out.println("Broker joined with ID: " + brokerID);
-			Router.onlineBrokers.add(thisBroker);
+			RouterGlobals.onlineBrokers.add(thisBroker);
 			// Reads the brokers input on the terminal
 
 			BufferedReader brokerInput = new BufferedReader(new InputStreamReader(brokerSocket.getInputStream()));
