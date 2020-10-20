@@ -67,13 +67,13 @@ public class BrokerPrinting {
     public static void printMyAccount() {
 
         System.out.println("-----------My Account---------");
-        if (Broker.BrokerStocks.size() == 0) {
+        if (Broker.brokerStocks.size() == 0) {
             System.out.println(" ");
             System.out.println("             Empty");
             System.out.println(" ");
         }
-        for (int i = 0; i < Broker.BrokerStocks.size(); i++)
-            System.out.println(Broker.BrokerStocks.get(i));
+        for (int i = 0; i < Broker.brokerStocks.size(); i++)
+            System.out.println(Broker.brokerStocks.get(i));
 
         System.out.println("------------- End ------------");
     }

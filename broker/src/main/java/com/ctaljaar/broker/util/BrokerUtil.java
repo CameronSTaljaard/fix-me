@@ -31,11 +31,11 @@ public class BrokerUtil {
     }
 
     public static Boolean checkTheAmountOfTheBrokerStock(ArrayList<String> fixMessage) {
-        for (int i = 0; i < Broker.BrokerStocks.size(); i++) {
+        for (int i = 0; i < Broker.brokerStocks.size(); i++) {
 
-            if (Broker.BrokerStocks.get(i).contains(fixMessage.get(0))) {
+            if (Broker.brokerStocks.get(i).contains(fixMessage.get(0))) {
                 i++;
-                String brokerQuantitySplit[] = Broker.BrokerStocks.get(i).split(" ");
+                String brokerQuantitySplit[] = Broker.brokerStocks.get(i).split(" ");
 
                 try {
                     int brokerQuantity = Integer.parseInt(brokerQuantitySplit[1]);
@@ -55,11 +55,11 @@ public class BrokerUtil {
     }
 
     public static void removeAmountOfStock(ArrayList<String> fixMessage) {
-        for (int i = 0; i < Broker.BrokerStocks.size(); i++) {
+        for (int i = 0; i < Broker.brokerStocks.size(); i++) {
 
-            if (Broker.BrokerStocks.get(i).contains(fixMessage.get(0))) {
+            if (Broker.brokerStocks.get(i).contains(fixMessage.get(0))) {
                 i++;
-                String brokerQuantitySplit[] = Broker.BrokerStocks.get(i).split(" ");
+                String brokerQuantitySplit[] = Broker.brokerStocks.get(i).split(" ");
 
                 try {
                     int brokerQuantity = Integer.parseInt(brokerQuantitySplit[1]);
@@ -69,19 +69,19 @@ public class BrokerUtil {
                         brokerQuantity -= fixMessageQuantity;
 
                         // Updates the Quantity in the stock
-                        Broker.BrokerStocks.remove(i);
-                        Broker.BrokerStocks.add(i, "Quantity: " + brokerQuantity);
+                        Broker.brokerStocks.remove(i);
+                        Broker.brokerStocks.add(i, "Quantity: " + brokerQuantity);
                         System.out.println("Executed");
                         //Removes the Stock from Broker Account if the Quantity is 0
                         if (brokerQuantity <= 0) {
-                            if (Broker.BrokerStocks.size() == 5) {
-                                Broker.BrokerStocks.clear();
+                            if (Broker.brokerStocks.size() == 5) {
+                                Broker.brokerStocks.clear();
                             } else {
-                                Broker.BrokerStocks.remove(--i);
-                                Broker.BrokerStocks.remove(i);
-                                Broker.BrokerStocks.remove(i);
-                                Broker.BrokerStocks.remove(i);
-                                Broker.BrokerStocks.remove(i);
+                                Broker.brokerStocks.remove(--i);
+                                Broker.brokerStocks.remove(i);
+                                Broker.brokerStocks.remove(i);
+                                Broker.brokerStocks.remove(i);
+                                Broker.brokerStocks.remove(i);
                             }
                         }
 
@@ -96,19 +96,19 @@ public class BrokerUtil {
     }
 
     public static Boolean addToExistingStock(ArrayList<String> fixMessage) {
-        for (int i = 0; i < Broker.BrokerStocks.size(); i++) {
+        for (int i = 0; i < Broker.brokerStocks.size(); i++) {
 
-            if (Broker.BrokerStocks.get(i).contains(fixMessage.get(0))) {
+            if (Broker.brokerStocks.get(i).contains(fixMessage.get(0))) {
                 i++;
-                String brokerQuantitySplit[] = Broker.BrokerStocks.get(i).split(" ");
+                String brokerQuantitySplit[] = Broker.brokerStocks.get(i).split(" ");
 
                 try {
                     int brokerQuantity = Integer.parseInt(brokerQuantitySplit[1]);
                     int fixMessageQuantity = Integer.parseInt(fixMessage.get(1));
 
                     brokerQuantity += fixMessageQuantity;
-                    Broker.BrokerStocks.remove(i);
-                    Broker.BrokerStocks.add(i, "Quantity: " + brokerQuantity);
+                    Broker.brokerStocks.remove(i);
+                    Broker.brokerStocks.add(i, "Quantity: " + brokerQuantity);
                     System.out.println("Executed");
                     return false;
                 } catch (NumberFormatException e) {
@@ -122,9 +122,9 @@ public class BrokerUtil {
     public static void addNewStock(ArrayList<String> fixMessage, BufferedReader routerInput) throws IOException {
         for (int i = 0; i < 4; i++) {
             String readLine = routerInput.readLine();
-            Broker.BrokerStocks.add(readLine);
+            Broker.brokerStocks.add(readLine);
         }
-        Broker.BrokerStocks.add(" ");
+        Broker.brokerStocks.add(" ");
         System.out.println("Executed");
     }
 
