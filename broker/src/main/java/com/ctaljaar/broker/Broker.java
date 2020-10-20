@@ -8,7 +8,7 @@ import com.ctaljaar.broker.util.BrokerPrinting;
 import com.ctaljaar.broker.util.BrokerUtil;
 
 public class Broker {
-	public static ArrayList<String> BrokerStocks = new ArrayList<>();
+	public static ArrayList<String> brokerStocks = new ArrayList<>();
 
 	public static void main(String[] args) throws Exception {
 		String readLine;
