@@ -54,7 +54,8 @@ public class BrokerThreadUtil {
         System.out.println(RouterGlobals.onlineBrokers);
     }
 
-    static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage) throws IOException {
+    static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage)
+            throws IOException {
         if (marketID != null) {
             for (Connection markets : RouterGlobals.onlineMarkets) {
                 // Get the onlineMarket connections
@@ -63,11 +64,10 @@ public class BrokerThreadUtil {
                     PrintWriter outputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
                     // Send Query to the Market to tell it that you have a Query coming through
                     outputStream.println("Query");
-                    for (int i = 0; i < 6; i++) {
-                        // Send the broker Fix message to the market
-                        outputStream.println(fixMessage.get(i));
-                    }
-
+                        for (int i = 0; i < 6; i++) {
+                            // Send the broker Fix message to the market
+                            outputStream.println(fixMessage.get(i));
+                        }
                 }
             }
         }

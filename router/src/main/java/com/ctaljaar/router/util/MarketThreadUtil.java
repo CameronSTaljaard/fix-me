@@ -8,8 +8,9 @@ import com.ctaljaar.router.model.RouterGlobals;
 
 public class MarketThreadUtil {
 
-	// Very unlikely this works.
-	// Function is attempting to find a Market in a Connection arraylist with a market constructor.
+    // Very unlikely this works.
+    // Function is attempting to find a Market in a Connection arraylist with a
+    // market constructor.
     public static void removeMarketFromOnlineList(MarketUtil thisMarket) {
         int index = RouterGlobals.onlineMarkets.indexOf(thisMarket);
         RouterGlobals.onlineMarkets.remove(index);
@@ -42,7 +43,7 @@ public class MarketThreadUtil {
 
         switch (i) {
             case 0:
-                error = checkInstrument(instrument);
+                error = checkMarket(instrument);
                 break;
             case 1:
                 error = checkSum(instrument, quantity, action);
@@ -53,20 +54,20 @@ public class MarketThreadUtil {
                 break;
         }
         if (error) {
-            sendFixMessageToBroker(brokerID[1], error);
+            sendFixMessageToBroker(brokerID[1], error, fixMessage);
             return i = 2;
         }
         if (i == 1) {
-            sendFixMessageToBroker(brokerID[1], error);
+            sendFixMessageToBroker(brokerID[1], error, fixMessage);
 
         }
         return i;
     }
 
-    // Check if the instrument is in the market
-    public static Boolean checkInstrument(String instrument) {
+    // Check if the Market is in the market
+    public static Boolean checkMarket(String market) {
         for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
-            if (instrument.equalsIgnoreCase(markets.stockName)) {
+            if (market.equalsIgnoreCase(markets.stockName)) {
                 return false;
             }
         }
@@ -74,12 +75,12 @@ public class MarketThreadUtil {
     }
 
     // Check if the broker quantity is more than the market quantity
-    public static Boolean checkSum(String instrument, String quantity, String action) {
+    public static Boolean checkSum(String market, String quantity, String action) {
         String quantityValue[] = quantity.split(" ");
         for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
-            if (instrument.equalsIgnoreCase(markets.stockName)) {
+            if (market.equalsIgnoreCase(markets.stockName)) {
                 int quantityInt = Integer.parseInt(quantityValue[1]);
-                if (quantityInt < markets.quantity) {
+                if (quantityInt < markets.quantity || action.equalsIgnoreCase("Action: Sell")) {
                     markets.updateQuanity(quantityInt, action);
                     return false;
                 }
@@ -88,7 +89,8 @@ public class MarketThreadUtil {
         return true;
     }
 
-    static void sendFixMessageToBroker(String brokerID, Boolean error) throws IOException {
+    static void sendFixMessageToBroker(String brokerID, Boolean error, ArrayList<String> fixMessage)
+            throws IOException {
         if (brokerID != null) {
             for (Connection broker : RouterGlobals.onlineBrokers) {
                 // Get the onlineBroker connections
@@ -101,8 +103,17 @@ public class MarketThreadUtil {
                     // Market sends outcome to the Broker
                     if (error == true) {
                         outputStream.println("Rejected");
+                        // for (int i = 0; i < 6; i++)
+                        //     if (i > 1)
+                        //         outputStream.println(fixMessage.get(i));
+
                     } else {
                         outputStream.println("Executed");
+                        for (int i = 0; i < 6; i++){
+                            if (i > 1)
+                            outputStream.println(fixMessage.get(i));
+
+                        }
                     }
                 }
             }
