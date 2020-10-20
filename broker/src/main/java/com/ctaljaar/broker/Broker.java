@@ -2,14 +2,17 @@ package com.ctaljaar.broker;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import com.ctaljaar.broker.util.BrokerPrinting;
 import com.ctaljaar.broker.util.BrokerUtil;
 
 public class Broker {
+	public static ArrayList<String> BrokerStocks = new ArrayList<>();
+
 	public static void main(String[] args) throws Exception {
 		String readLine;
-		
+
 		String ip = "localhost";
 		int port = 5000;
 		Socket brokerSocket = new Socket(ip, port);
@@ -19,7 +22,7 @@ public class Broker {
 		BrokerPrinting.welcomeMessage();
 		while (true) {
 			readLine = terminalInput.readLine();
-		
+
 			// checks what the broker has input on the terminal
 			if (BrokerUtil.validCommand(readLine))
 				BrokerUtil.runBrokerCommand(readLine, outputStream, routerInput, terminalInput);
