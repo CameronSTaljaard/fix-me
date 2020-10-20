@@ -3,20 +3,26 @@ package com.ctaljaar.broker.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class BrokerPrinting {
-	public static void welcomeMessage() {
-		System.out.println("Welcome to the marketplace.");
-		System.out.println("Please execute a command to continue.");
-		System.out.println("Valid commands:");
-		System.out.println("--------");
-		System.out.println("Buy");
-		System.out.println("Sell");
-		System.out.println("Markets");
-		System.out.println("Brokers");
-		System.out.println("--------");
-	}
+import com.ctaljaar.broker.Broker;
 
-	public static void printOnlineBrokers(BufferedReader routerInput) throws IOException {
+public class BrokerPrinting {
+    public static void welcomeMessage() {
+        System.out.println(" ");
+        System.out.println("     Welcome to the marketplace");
+        System.out.println("Please execute a command to continue");
+        System.out.println("---------------------------------------");
+
+        System.out.println("Valid commands:");
+        System.out.println("                Buy");
+        System.out.println("                Sell");
+        System.out.println("                Markets");
+        System.out.println("                Brokers");
+        System.out.println("                Account");
+        System.out.println("---------------------------------------");
+        System.out.println(" ");
+    }
+
+    public static void printOnlineBrokers(BufferedReader routerInput) throws IOException {
         String routerMessage;
         System.out.println("-------Connected brokers------");
         System.out.println("");
@@ -29,9 +35,9 @@ public class BrokerPrinting {
         }
         System.out.println("");
         System.out.println("-----------End of list---------");
-	}
-	
-	public static void printOnlineMarkets(BufferedReader routerInput) throws IOException {
+    }
+
+    public static void printOnlineMarkets(BufferedReader routerInput) throws IOException {
         int i = 0;
         String routerMessage;
         System.out.println("---------Online Markets-------");
@@ -51,5 +57,24 @@ public class BrokerPrinting {
             i++;
         }
         System.out.println("-----------End of list---------");
+    }
+
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    public static void printMyAccount() {
+
+        System.out.println("-----------My Account---------");
+        if (Broker.BrokerStocks.size() == 0) {
+            System.out.println(" ");
+            System.out.println("             Empty");
+            System.out.println(" ");
+        }
+        for (int i = 0; i < Broker.BrokerStocks.size(); i++)
+            System.out.println(Broker.BrokerStocks.get(i));
+
+        System.out.println("------------- End ------------");
     }
 }
