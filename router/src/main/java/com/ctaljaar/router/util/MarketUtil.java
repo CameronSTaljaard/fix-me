@@ -10,12 +10,12 @@ public class MarketUtil {
 	protected int sellPrice;
 	protected String marketName;
 
-	public MarketUtil(String uniqueID, String marketName) {
+	public MarketUtil(String uniqueID, String marketName,String stockName) {
 		this.quantity = 50;
 		this.buyPrice = 100;
 		this.sellPrice = 50;
 		this.marketName = marketName;
-		this.stockName = "Instrument: IBM";
+		this.stockName = stockName;
 		this.uniqueID = uniqueID;
 	}
 

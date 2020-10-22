@@ -14,9 +14,14 @@ public class Market {
 		BufferedReader inputStream = new BufferedReader(new InputStreamReader(marketSocket.getInputStream()));
 		BufferedReader terminalInput = new BufferedReader(new InputStreamReader(System.in));
 
-		System.out.println("What is the market type?");
+		outputStream.println("Market start");
+		System.out.println("What is the market name?");
+
 		readLine = terminalInput.readLine();
 		outputStream.println("Market: "+readLine);
+		System.out.println("What stock do you have?");
+		readLine = terminalInput.readLine();
+		outputStream.println("Instrument: "+readLine);
 		System.out.println("Thank you!");
 
 		while (true) {

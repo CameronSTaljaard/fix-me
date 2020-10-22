@@ -42,9 +42,12 @@ public class MarketThread extends Thread {
 			while (true) {
 				marketMessage = marketInput.readLine();
 				if (marketMessage != null) {
-					if (marketMessage.contains("Market")) {
+					if (marketMessage.contains("Market start")) {
+						String marketName = marketInput.readLine();
+						String stockName = marketInput.readLine();
+
 						// Creates the market info
-						thisMarket = new MarketUtil(marketID, marketMessage);
+						thisMarket = new MarketUtil(marketID, marketName,stockName);
 						// Adds the instance to the onlineMarketInfo array
 						RouterGlobals.onlineMarketsInfo.add(thisMarket);
 					} else if (marketMessage.equalsIgnoreCase("Query")) {
