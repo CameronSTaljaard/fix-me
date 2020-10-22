@@ -38,23 +38,15 @@ public class BrokerPrinting {
     }
 
     public static void printOnlineMarkets(BufferedReader routerInput) throws IOException {
-        int i = 0;
         String routerMessage;
         System.out.println("---------Online Markets-------");
         System.out.println("");
 
         // Reads the data from the router
         while ((routerMessage = routerInput.readLine()) != null) {
-            // Prints a space between the different markets
-            if (i == 7) {
-                System.out.println("");
-                i = 0;
-            }
-
             if (routerMessage.equalsIgnoreCase("End of list"))
                 break;
             System.out.println(routerMessage);
-            i++;
         }
         System.out.println("-----------End of list---------");
     }
@@ -82,17 +74,16 @@ public class BrokerPrinting {
                 System.out.println("          Your STOCKS");
             }
             if (Broker.brokerStocks.get(i).contains("Price:")) {
-                //Takes the price of the stocks and subtracts it from the Broker balance
-                balance = BrokerUtil.brokerBalance(Broker.brokerStocks.get(i));
+                // Takes the price of the stocks and subtracts it from the Broker balance
+                balance = BrokerUtil.brokerBalance(balance, Broker.brokerStocks.get(i));
             } else {
                 System.out.println(Broker.brokerStocks.get(i));
             }
-            //Prints the Broker Balance
+            // Prints the Broker Balance
             if (i == Broker.brokerStocks.size() - 1) {
                 System.out.println("Balance: " + balance);
             }
         }
         System.out.println("------------- End ------------");
     }
-
 }

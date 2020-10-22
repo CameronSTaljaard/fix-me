@@ -273,8 +273,7 @@ public class BrokerUtil {
 
     }
 
-    public static int brokerBalance(String price) {
-        int balance = 5000;
+    public static int brokerBalance(int balance,String price) {
         String priceSplit[] = price.split(" ");
         try {
             int priceValue = Integer.parseInt(priceSplit[1]);
