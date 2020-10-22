@@ -42,7 +42,7 @@ public class MarketThread extends Thread {
 			while (true) {
 				marketMessage = marketInput.readLine();
 				if (marketMessage != null) {
-					if (marketMessage.contains("Instrument")) {
+					if (marketMessage.contains("Market")) {
 						// Creates the market info
 						thisMarket = new MarketUtil(marketID, marketMessage);
 						// Adds the instance to the onlineMarketInfo array
@@ -55,7 +55,7 @@ public class MarketThread extends Thread {
 							// add fix message from market to an arrayList
 							String info = marketInput.readLine();
 							fixMessage.add(info);
-							System.out.println(info);
+							// System.out.println(info);
 						}
 						MarketThreadUtil.checkFixMessage(fixMessage);
 

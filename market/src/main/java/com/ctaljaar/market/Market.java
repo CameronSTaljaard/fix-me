@@ -16,7 +16,7 @@ public class Market {
 
 		System.out.println("What is the market type?");
 		readLine = terminalInput.readLine();
-		outputStream.println("Instrument: " + readLine);
+		outputStream.println("Market: "+readLine);
 		System.out.println("Thank you!");
 
 		while (true) {

@@ -6,18 +6,23 @@ public class MarketUtil {
 	protected String stockName;
 	protected String uniqueID;
 	protected int quantity;
+	protected int buyPrice;
+	protected int sellPrice;
+	protected String marketName;
 
-	public MarketUtil(String uniqueID, String stockName) {
-		this.balance = 5000;
+	public MarketUtil(String uniqueID, String marketName) {
 		this.quantity = 50;
-		this.stockName = stockName;
+		this.buyPrice = 100;
+		this.sellPrice = 50;
+		this.marketName = marketName;
+		this.stockName = "Instrument: IBM";
 		this.uniqueID = uniqueID;
 	}
 
 	@Override
 	public String toString() {
-		return ("Market:" + "\nID: " + uniqueID + "\nBalance: " + balance + "\n" + stockName
-				+ "\nBuy: 100 \nSell: 50 \nQuantity: " + String.valueOf(quantity));
+		return (marketName + "\nID: " + uniqueID + "\n" + "\n" +stockName + "\nBuy: " + buyPrice
+				+ "\nSell: " + sellPrice + "\nQuantity: " + String.valueOf(quantity)+"\n" );
 	}
 
 	public String getStock() {

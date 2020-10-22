@@ -8,6 +8,8 @@ import com.ctaljaar.router.model.RouterGlobals;
 
 public class MarketThreadUtil {
 
+    protected static String errorOutputStream = null;
+
     // Very unlikely this works.
     // Function is attempting to find a Market in a Connection arraylist with a
     // market constructor.
@@ -26,7 +28,8 @@ public class MarketThreadUtil {
          * 
          */
         // Loop through all the functions and breaks if there is an error
-        for (int i = 0; i < 2; i++) {
+        // i is the amount of error checking methods there are
+        for (int i = 0; i < 3; i++) {
             i = errorCheck(i, fixMessage);
         }
 
@@ -43,9 +46,12 @@ public class MarketThreadUtil {
 
         switch (i) {
             case 0:
-                error = checkMarket(instrument);
+                error = checkInstrument(instrument);
                 break;
             case 1:
+                error = checkSumOfPrice(instrument, quantity, price, action);
+                break;
+            case 2:
                 error = checkSum(instrument, quantity, action);
                 break;
 
@@ -57,20 +63,22 @@ public class MarketThreadUtil {
             sendFixMessageToBroker(brokerID[1], error, fixMessage);
             return i = 2;
         }
-        if (i == 1) {
+        if (i == 2) {
             sendFixMessageToBroker(brokerID[1], error, fixMessage);
 
         }
         return i;
     }
 
-    // Check if the Market is in the market
-    public static Boolean checkMarket(String market) {
+    // Check if the Instrument is in the Market
+    public static Boolean checkInstrument(String instrument) {
         for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
-            if (market.equalsIgnoreCase(markets.stockName)) {
+            if (instrument.equalsIgnoreCase(markets.stockName)) {
                 return false;
             }
         }
+        errorOutputStream = "This Stock does not exist in this Market";
+
         return true;
     }
 
@@ -79,13 +87,64 @@ public class MarketThreadUtil {
         String quantityValue[] = quantity.split(" ");
         for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
             if (market.equalsIgnoreCase(markets.stockName)) {
-                int quantityInt = Integer.parseInt(quantityValue[1]);
-                if (quantityInt < markets.quantity || action.equalsIgnoreCase("Action: Sell")) {
-                    markets.updateQuanity(quantityInt, action);
-                    return false;
+                try {
+                    int quantityInt = Integer.parseInt(quantityValue[1]);
+                    if (quantityInt < markets.quantity || action.equalsIgnoreCase("Action: Sell")) {
+                        markets.updateQuanity(quantityInt, action);
+
+                        return false;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(e);
+                    System.out.println("CheckSum");
                 }
             }
         }
+        errorOutputStream = "The Quantity you want of the stock is more than the Stock has";
+
+        return true;
+    }
+
+    public static Boolean checkSumOfPrice(String market, String quantity, String brokerPaid, String action) {
+        String quantityValue[] = quantity.split(" ");
+        String brokerPaidValue[] = brokerPaid.split(" ");
+        for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
+            if (market.equalsIgnoreCase(markets.stockName)) {
+                try {
+                    int quantityInt = Integer.parseInt(quantityValue[1]);
+                    int priceInt = Integer.parseInt(brokerPaidValue[1]);
+                    if (action.equalsIgnoreCase("Action: Sell")) {
+                        int totalAmountDue = quantityInt * markets.sellPrice;
+                        if (totalAmountDue == priceInt) {
+                            return false;
+                        }else if (totalAmountDue < priceInt){
+                            errorOutputStream = "You are asking to much for this stock .The Sell price is "+markets.sellPrice+" per stock";
+                            return true;
+
+                        }
+                    } else if (action.equalsIgnoreCase("Action: Buy")) {
+                        int totalAmountDue = quantityInt * markets.buyPrice;
+                        if (totalAmountDue == priceInt) {
+                            return false;
+                        }else if (totalAmountDue < priceInt){
+                            errorOutputStream = "You are paying to much for this stock .The Buy price is "+markets.sellPrice+" per stock";
+                            return true;
+                        }
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.out.println(e);
+                    System.out.println("CheckSumOfPrice");
+
+                }
+            }
+        }
+        if(action.equalsIgnoreCase("Action: Buy"))
+        errorOutputStream = "The Quantity that you want of the stock costs more than what you paid";
+        if(action.equalsIgnoreCase("Action: Sell"))
+        errorOutputStream = "The Amount you want for your stock is more than what it is worth";
+
+
         return true;
     }
 
@@ -103,17 +162,11 @@ public class MarketThreadUtil {
                     // Market sends outcome to the Broker
                     if (error == true) {
                         outputStream.println("Rejected");
-                        // for (int i = 0; i < 6; i++)
-                        //     if (i > 1)
-                        //         outputStream.println(fixMessage.get(i));
+                        outputStream.println(errorOutputStream);
 
                     } else {
                         outputStream.println("Executed");
-                        for (int i = 0; i < 6; i++){
-                            if (i > 1)
-                            outputStream.println(fixMessage.get(i));
 
-                        }
                     }
                 }
             }
