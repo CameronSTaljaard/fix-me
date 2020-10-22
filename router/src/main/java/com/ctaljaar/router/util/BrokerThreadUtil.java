@@ -37,7 +37,7 @@ public class BrokerThreadUtil {
             // To get just the marketID
 
             // String marketID = fixMessage.get(2).split(" ");
-            sendFixMessageToMarket(getMarketID(fixMessage.get(2)), fixMessage);
+            sendFixMessageToMarket(getMarketID(fixMessage.get(2)), fixMessage,outputStream);
 
         } else if (brokerMessage.equalsIgnoreCase("exit")) {
             // Removes this broker from the online brokers
@@ -54,22 +54,24 @@ public class BrokerThreadUtil {
         System.out.println(RouterGlobals.onlineBrokers);
     }
 
-    static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage)
-            throws IOException {
+    static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage, PrintWriter brokerOutputStream) throws IOException {
         if (marketID != null) {
             for (Connection markets : RouterGlobals.onlineMarkets) {
                 // Get the onlineMarket connections
                 if (markets.uniqueID.equals(marketID)) {
                     // Get that socket connection of the market you want
-                    PrintWriter outputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
+                    PrintWriter marketOutputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
                     // Send Query to the Market to tell it that you have a Query coming through
-                    outputStream.println("Query");
-                        for (int i = 0; i < 6; i++) {
-                            // Send the broker Fix message to the market
-                            outputStream.println(fixMessage.get(i));
-                        }
+                    marketOutputStream.println("Query");
+                    for (int i = 0; i < 6; i++) {
+                        // Send the broker Fix message to the market
+                        marketOutputStream.println(fixMessage.get(i));
+                    }
                 }
             }
+        } else {
+            brokerOutputStream.println("error");
+            brokerOutputStream.println("This Market does not exist");
         }
     }
 

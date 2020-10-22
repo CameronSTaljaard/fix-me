@@ -72,7 +72,7 @@ public class BrokerUtil {
                         Broker.brokerStocks.remove(i);
                         Broker.brokerStocks.add(i, "Quantity: " + brokerQuantity);
                         System.out.println("Executed");
-                        //Removes the Stock from Broker Account if the Quantity is 0
+                        // Removes the Stock from Broker Account if the Quantity is 0
                         if (brokerQuantity <= 0) {
                             if (Broker.brokerStocks.size() == 5) {
                                 Broker.brokerStocks.clear();
@@ -120,10 +120,11 @@ public class BrokerUtil {
     }
 
     public static void addNewStock(ArrayList<String> fixMessage, BufferedReader routerInput) throws IOException {
-        for (int i = 0; i < 4; i++) {
-            String readLine = routerInput.readLine();
-            Broker.brokerStocks.add(readLine);
-        }
+
+        Broker.brokerStocks.add("Instrument: " + fixMessage.get(0));
+        Broker.brokerStocks.add("Quantity: " + fixMessage.get(1));
+        Broker.brokerStocks.add("Market: " + fixMessage.get(2));
+        Broker.brokerStocks.add("Price: " + fixMessage.get(3));
         Broker.brokerStocks.add(" ");
         System.out.println("Executed");
     }
@@ -144,15 +145,20 @@ public class BrokerUtil {
         // Sends the input of the Broker
 
         String routerInputInfo;
-
+        if (readLine.equalsIgnoreCase("options")) {
+            BrokerPrinting.clearScreen();
+            BrokerPrinting.welcomeMessage();
+        }
         if (readLine.equalsIgnoreCase("buy")) {
             outputStream.println(readLine);
             BrokerPrinting.clearScreen();
             ArrayList<String> fixMessage = BrokerUtil.printFixMessageOrder(terminalInput);
             sendFixMessage(outputStream, fixMessage);
+            // Router returns error if something went wrong
+            String routerCheck = routerInput.readLine();
             BrokerPrinting.clearScreen();
             // Prints outcome of the Order for testing
-            if (routerInput.readLine().equalsIgnoreCase("Order")) {
+            if (routerCheck.equalsIgnoreCase("Order")) {
                 routerInputInfo = routerInput.readLine();
                 if (routerInputInfo.equalsIgnoreCase("Executed")) {
                     addStock(fixMessage, routerInput);
@@ -162,6 +168,9 @@ public class BrokerUtil {
 
                     System.out.println("Something went wrong");
                 }
+            }
+            if (routerCheck.equalsIgnoreCase("error")) {
+                System.out.println(routerInput.readLine());
             }
         }
         if (readLine.equalsIgnoreCase("sell")) {
@@ -177,10 +186,6 @@ public class BrokerUtil {
                 if (routerInput.readLine().equalsIgnoreCase("Order")) {
                     routerInputInfo = routerInput.readLine();
                     if (routerInputInfo.equalsIgnoreCase("Executed")) {
-                        // Read all the output from the routerInput to make the input empty
-                        for (int i = 0; i < 4; i++) {
-                            routerInputInfo = routerInput.readLine();
-                        }
                         // Remove the amout you are selling from your stock
                         removeAmountOfStock(fixMessage);
 
@@ -225,7 +230,7 @@ public class BrokerUtil {
     }
 
     public static boolean validCommand(String command) {
-        String validCommands[] = { "buy", "sell", "brokers", "markets", "account" };
+        String validCommands[] = { "buy", "sell", "brokers", "markets", "account", "options" };
         boolean valid = Arrays.stream(validCommands).anyMatch(command.toLowerCase()::equals);
         if (valid)
             return true;
