@@ -29,15 +29,15 @@ public class BrokerThreadUtil {
         } else if (brokerMessage.equalsIgnoreCase("buy") || brokerMessage.equalsIgnoreCase("sell")) {
             ArrayList<String> fixMessage = new ArrayList<>();
             fixMessage.add("BrokerID: " + BrokerThread.thisBroker.uniqueID);
-            fixMessage.add("Action: " + brokerMessage);
-            for (int i = 0; i < 4; i++) {
+            
+            for (int i = 0; i < 5; i++) {
                 String fixMessageInfo = brokerInput.readLine();
                 fixMessage.add(fixMessageInfo);
             }
             // To get just the marketID
 
             // String marketID = fixMessage.get(2).split(" ");
-            sendFixMessageToMarket(getMarketID(fixMessage.get(2)), fixMessage,outputStream);
+            sendFixMessageToMarket(getMarketID(fixMessage.get(4)), fixMessage,outputStream);
 
         } else if (brokerMessage.equalsIgnoreCase("exit")) {
             // Removes this broker from the online brokers
@@ -75,10 +75,10 @@ public class BrokerThreadUtil {
         }
     }
 
-    static String getMarketID(String instrument) {
+    static String getMarketID(String market) {
         // Loops through the markets to get the ID of the instrument
         for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
-            if (instrument.equalsIgnoreCase(markets.stockName)) {
+            if (market.equalsIgnoreCase(markets.marketName)) {
                 return markets.uniqueID;
             }
         }

@@ -65,16 +65,34 @@ public class BrokerPrinting {
     }
 
     public static void printMyAccount() {
+        int balance = 5000;
 
         System.out.println("-----------My Account---------");
         if (Broker.brokerStocks.size() == 0) {
             System.out.println(" ");
+            System.out.println("          Your STOCKS");
             System.out.println("             Empty");
             System.out.println(" ");
+            System.out.println("Balance: " + balance);
+            System.out.println(" ");
         }
-        for (int i = 0; i < Broker.brokerStocks.size(); i++)
-            System.out.println(Broker.brokerStocks.get(i));
-
+        for (int i = 0; i < Broker.brokerStocks.size(); i++) {
+            if (i == 0) {
+                System.out.println(" ");
+                System.out.println("          Your STOCKS");
+            }
+            if (Broker.brokerStocks.get(i).contains("Price:")) {
+                //Takes the price of the stocks and subtracts it from the Broker balance
+                balance = BrokerUtil.brokerBalance(Broker.brokerStocks.get(i));
+            } else {
+                System.out.println(Broker.brokerStocks.get(i));
+            }
+            //Prints the Broker Balance
+            if (i == Broker.brokerStocks.size() - 1) {
+                System.out.println("Balance: " + balance);
+            }
+        }
         System.out.println("------------- End ------------");
     }
+
 }
