@@ -187,12 +187,12 @@ public class BrokerUtil {
             BrokerPrinting.clearScreen();
             // Prints outcome of the Order for testing
             if (routerCheck.equalsIgnoreCase("Order")) {
-                routerInputInfo = routerInput.readLine();
+				routerInputInfo = routerInput.readLine();
                 if (routerInputInfo.equalsIgnoreCase("Executed")) {
                     addStock(fixMessage, routerInput);
 
                 } else if (routerInputInfo.equalsIgnoreCase("Rejected")) {
-                    System.out.println("Rejected");
+					System.out.println("The market has rejected your request.");
 
                     System.out.println(routerInput.readLine());
                 }
