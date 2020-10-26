@@ -256,9 +256,8 @@ public class BrokerUtil {
     }
 
     private static String checkSumMessage(String message, String brokerID) {
-        String parsedMessage = brokerID;
-        parsedMessage += " | " + message.replaceAll(" ", "|");
-        return parsedMessage;
+        String checkSumMessage = brokerID;
+        return checkSumMessage += " | " + message.replaceAll(" ", "|");
     }
 
     public static boolean validCommand(String command) {
