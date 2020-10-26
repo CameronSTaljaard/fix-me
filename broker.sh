@@ -1,0 +1,1 @@
+java -jar ./broker/target/fixme-broker-1.0-SNAPSHOT.jar
