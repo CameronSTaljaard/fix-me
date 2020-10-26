@@ -149,13 +149,11 @@ public class BrokerUtil {
 
     public static void sendFixMessage(PrintWriter outputStream, ArrayList<String> fixMessage, String brokerID) {
         if (fixMessage.size() == 5) {
-            // outputStream.println("Query");
-            outputStream.println(checkSumMessage(fixMessage.get(0), brokerID));
-            outputStream.println("Action: " + fixMessage.get(0));
-            outputStream.println("Instrument: " + fixMessage.get(1));
-            outputStream.println("Quantity: " + fixMessage.get(2));
-            outputStream.println("Market: " + fixMessage.get(3));
-            outputStream.println("Price: " + fixMessage.get(4));
+            outputStream.println(createCheckSum(fixMessage.get(0), brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(1),brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(2),brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(3),brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(4),brokerID));
         }
     }
 
@@ -180,13 +178,13 @@ public class BrokerUtil {
             BrokerPrinting.clearScreen();
             // Prints outcome of the Order for testing
             if (routerCheck.equalsIgnoreCase("Order")) {
-				routerInputInfo = routerInput.readLine();
+                routerInputInfo = routerInput.readLine();
                 if (routerInputInfo.equalsIgnoreCase("Executed")) {
                     addStock(fixMessage, routerInput);
                     System.out.println(routerInput.readLine());
 
                 } else if (routerInputInfo.equalsIgnoreCase("Rejected")) {
-					System.out.println("The market has rejected your request.");
+                    System.out.println("The market has rejected your request.");
 
                     System.out.println(routerInput.readLine());
                 }
@@ -255,9 +253,19 @@ public class BrokerUtil {
 
     }
 
-    private static String checkSumMessage(String message, String brokerID) {
+    private static String createCheckSum(String message, String brokerID) {
+        int checkSum = 0;
         String checkSumMessage = brokerID;
-        return checkSumMessage += " | " + message.replaceAll(" ", "|");
+        checkSumMessage += "-" + message.replaceAll(" ", "-");
+        for (int i = 0; i < message.length(); i++) {
+            Integer a = Character.getNumericValue(message.charAt(i));
+            String binary = Integer.toBinaryString(a);
+            int binaryInt = Integer.parseInt(binary);
+            checkSum += binaryInt;
+        }
+        
+        return checkSumMessage+="-"+checkSum;
+
     }
 
     public static boolean validCommand(String command) {

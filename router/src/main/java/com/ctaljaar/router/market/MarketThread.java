@@ -47,7 +47,7 @@ public class MarketThread extends Thread {
 
 						ArrayList<String> fixMessage = new ArrayList<>();
 
-						for (int i = 0; i < 7; i++) {
+						for (int i = 0; i < 5; i++) {
 							// add fix message from market to an arrayList
 							String info = marketInput.readLine();
 							fixMessage.add(info);

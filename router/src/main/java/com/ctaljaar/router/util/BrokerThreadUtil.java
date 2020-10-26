@@ -14,11 +14,10 @@ public class BrokerThreadUtil {
             String brokerThreadID) throws IOException {
         System.out.println("Broker message = " + brokerMessage);
 
-        if(brokerMessage.equalsIgnoreCase("BrokerID")){
+        if (brokerMessage.equalsIgnoreCase("BrokerID")) {
             System.out.println(brokerThreadID);
             outputStream.println(brokerThreadID);
-        }
-        else if (brokerMessage.equalsIgnoreCase("list")) {
+        } else if (brokerMessage.equalsIgnoreCase("list")) {
             for (Connection connection : RouterGlobals.onlineBrokers) {
                 // Send the data to the Broker
                 outputStream.println("Broker: " + connection);
@@ -34,13 +33,17 @@ public class BrokerThreadUtil {
             outputStream.println("End of list");
         } else if (brokerMessage.equalsIgnoreCase("buy") || brokerMessage.equalsIgnoreCase("sell")) {
             ArrayList<String> fixMessage = new ArrayList<>();
-            fixMessage.add("BrokerID: " + BrokerThread.thisBroker.uniqueID);
-            for (int i = 0; i < 6; i++) {
+            // fixMessage.add("BrokerID: " + BrokerThread.thisBroker.uniqueID);
+            for (int i = 0; i < 5; i++) {
                 String fixMessageInfo = brokerInput.readLine();
-                System.out.println(fixMessageInfo);
-                fixMessage.add(fixMessageInfo);
+                if (checkSum(fixMessageInfo, BrokerThread.thisBroker.uniqueID) == true) {
+                    System.out.println(fixMessageInfo);
+                    fixMessage.add(fixMessageInfo);
+                } else {
+                    System.out.println("The checkSum does not match! ");
+                }
             }
-            sendFixMessageToMarket(getMarketID(fixMessage.get(5)), fixMessage, outputStream, brokerThreadID);
+            sendFixMessageToMarket(getMarketID(fixMessage.get(3)), fixMessage, outputStream, brokerThreadID);
 
         } else if (brokerMessage.equalsIgnoreCase("exit")) {
             // Removes this broker from the online brokers
@@ -49,6 +52,24 @@ public class BrokerThreadUtil {
         } else {
             // System.out.println("Broker message = " + brokerMessage);
         }
+    }
+
+    private static Boolean checkSum(String message, String brokerID) {
+        int checkSum = 0;
+        String checkSumMessage = brokerID;
+        String messageSplit[] = message.split("-");
+        checkSumMessage += "-" + messageSplit[1].replaceAll(" ", "-");
+        for (int i = 0; i < messageSplit[1].length(); i++) {
+            Integer a = Character.getNumericValue(messageSplit[1].charAt(i));
+            String binary = Integer.toBinaryString(a);
+            int binaryInt = Integer.parseInt(binary);
+            checkSum += binaryInt;
+        }
+
+        if (message.equals(checkSumMessage += "-" + checkSum))
+            return true;
+        return false;
+
     }
 
     static void removeBrokerFromOnlineList(Connection thisBroker) {
@@ -67,7 +88,7 @@ public class BrokerThreadUtil {
                     PrintWriter marketOutputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
                     // Send Query to the Market to tell it that you have a Query coming through
                     marketOutputStream.println("Query");
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < 5; i++) {
                         // Send the broker Fix message to the market
                         marketOutputStream.println(fixMessage.get(i));
                     }
@@ -81,8 +102,10 @@ public class BrokerThreadUtil {
 
     static String getMarketID(String market) {
         // Loops through the markets to get the ID of the instrument
+        String marketSplit[] = market.split("-");
         for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
-            if (market.equalsIgnoreCase(markets.marketName)) {
+            String marketNameSplit[] = markets.marketName.split(" ");
+            if (marketSplit[1].equalsIgnoreCase(marketNameSplit[1])) {
                 return markets.uniqueID;
             }
         }

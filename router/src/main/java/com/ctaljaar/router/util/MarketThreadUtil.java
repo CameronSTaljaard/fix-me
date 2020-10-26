@@ -25,7 +25,7 @@ public class MarketThreadUtil {
 
         // Loop through all the functions and breaks if there is an error
         // i is the amount of error checking methods there are
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             i = errorCheck(i, fixMessage);
         }
 
@@ -33,12 +33,21 @@ public class MarketThreadUtil {
 
     public static int errorCheck(int i, ArrayList<String> fixMessage) throws IOException {
         Boolean error = false;
-        String brokerID[] = fixMessage.get(0).split(" ");
+        String actionSplit[] = fixMessage.get(0).split("-");
+        String action = "Action: "+actionSplit[1];
+
+        String instrumentSplit[] = fixMessage.get(1).split("-");
+        String instrument = "Instrument: "+instrumentSplit[1];
+
+        String quantitySplit[] = fixMessage.get(2).split("-");
+        String quantity = "Quantity: "+quantitySplit[1];
+
+        String priceSplit[] = fixMessage.get(4).split("-");
+        String price = "Price: "+priceSplit[1];
+
+        String brokerID[] = fixMessage.get(0).split("-");
+
         String checkSum = fixMessage.get(1);
-        String action = fixMessage.get(2);
-        String instrument = fixMessage.get(3);
-        String quantity = fixMessage.get(4);
-        String price = fixMessage.get(6);
 
         switch (i) {
             case 0:
@@ -50,19 +59,16 @@ public class MarketThreadUtil {
             case 2:
                 error = checkSumQuantity(instrument, quantity, action);
                 break;
-            case 3:
-                error = checkSum(brokerID[1], checkSum, action);
-                break;
             default:
                 System.out.println("Something went wrong!");
                 break;
         }
         if (error) {
-            sendFixMessageToBroker(brokerID[1], error, fixMessage);
-            return i = 3;
+            sendFixMessageToBroker(brokerID[0], error, fixMessage);
+            return i = 2;
         }
-        if (i == 3) {
-            sendFixMessageToBroker(brokerID[1], error, fixMessage);
+        if (i == 2) {
+            sendFixMessageToBroker(brokerID[0], error, fixMessage);
 
         }
         return i;
@@ -177,9 +183,11 @@ public class MarketThreadUtil {
                         outputStream.println(errorOutputStream);
 
                     } else {
+                        String actionSplit[] = fixMessage.get(0).split("-");
+                        String action = "Action = "+actionSplit[1];
                         outputStream.println("Executed");
-                        outputStream.println(
-                                fixMessage.get(2) + " was Executed successfully [Router ID = " + IDOutputStream + "]");
+                        outputStream
+                                .println(action + " was Executed successfully [Router ID = " + IDOutputStream + "]");
                     }
                 }
             }
