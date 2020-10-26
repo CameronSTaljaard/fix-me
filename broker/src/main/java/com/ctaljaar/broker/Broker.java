@@ -12,7 +12,6 @@ public class Broker {
 
 	public static void main(String[] args) throws Exception {
 		String readLine;
-
 		String ip = "localhost";
 		int port = 5000;
 		Socket brokerSocket = new Socket(ip, port);
@@ -20,9 +19,9 @@ public class Broker {
 		BufferedReader terminalInput = new BufferedReader(new InputStreamReader(System.in));
 		BufferedReader routerInput = new BufferedReader(new InputStreamReader(brokerSocket.getInputStream()));
 		BrokerPrinting.welcomeMessage();
+		
 		while (true) {
 			readLine = terminalInput.readLine();
-
 			// checks what the broker has input on the terminal
 			if (BrokerUtil.validCommand(readLine))
 				BrokerUtil.runBrokerCommand(readLine, outputStream, routerInput, terminalInput);

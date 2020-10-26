@@ -6,13 +6,13 @@ import java.net.Socket;
 
 public class MarketListener implements Runnable {
 	int marketPort = 5001;
-	
+
 	@Override
 	public void run() {
 		try {
 			ServerSocket marketServerSocket = new ServerSocket(marketPort);
 			while (true) {
-				//Makes connection with the new broker socket
+				// Makes connection with the new broker socket
 				Socket marketSocket = marketServerSocket.accept();
 				System.out.println("New Market joined");
 				new MarketThread(marketSocket).start();

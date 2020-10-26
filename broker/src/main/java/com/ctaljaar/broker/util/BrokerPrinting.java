@@ -11,12 +11,10 @@ public class BrokerPrinting {
         System.out.println("     Welcome to the marketplace");
         System.out.println("Please execute a command to continue");
         System.out.println("---------------------------------------");
-
         System.out.println("Valid commands:");
         System.out.println("                Buy");
         System.out.println("                Sell");
         System.out.println("                Markets");
-        System.out.println("                Brokers");
         System.out.println("                Account");
         System.out.println("---------------------------------------");
         System.out.println(" ");
@@ -24,9 +22,9 @@ public class BrokerPrinting {
 
     public static void printOnlineBrokers(BufferedReader routerInput) throws IOException {
         String routerMessage;
+
         System.out.println("-------Connected brokers------");
         System.out.println("");
-
         // Reads the data from the router
         while ((routerMessage = routerInput.readLine()) != null) {
             if (routerMessage.equalsIgnoreCase("End of list"))
@@ -39,9 +37,9 @@ public class BrokerPrinting {
 
     public static void printOnlineMarkets(BufferedReader routerInput) throws IOException {
         String routerMessage;
+
         System.out.println("---------Online Markets-------");
         System.out.println("");
-
         // Reads the data from the router
         while ((routerMessage = routerInput.readLine()) != null) {
             if (routerMessage.equalsIgnoreCase("End of list"))

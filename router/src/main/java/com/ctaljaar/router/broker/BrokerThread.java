@@ -28,10 +28,10 @@ public class BrokerThread extends Thread {
 			PrintWriter outputStream = new PrintWriter(brokerSocket.getOutputStream(), true);
 			// BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-			String brokerID = RouterUtil.generateID();
-			thisBroker = new Connection(brokerSocket, brokerID);
+			String brokerThreadID = RouterUtil.generateID();
+			thisBroker = new Connection(brokerSocket, brokerThreadID);
 			// Adds the New Broker to the List of online Brokers
-			System.out.println("Broker joined with ID: " + brokerID);
+			// System.out.println("Broker joined with ID: " + brokerThreadID);
 			RouterGlobals.onlineBrokers.add(thisBroker);
 			// Reads the brokers input on the terminal
 
@@ -41,7 +41,7 @@ public class BrokerThread extends Thread {
 				brokerMessage = brokerInput.readLine();
 				if (brokerMessage != null) {
 					// Check what the Broker has send
-					BrokerThreadUtil.checkBrokerMessage(brokerMessage, outputStream, brokerInput);
+					BrokerThreadUtil.checkBrokerMessage(brokerMessage, outputStream, brokerInput,brokerThreadID);
 				}
 				if (thisBroker == null) {
 					break;

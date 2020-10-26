@@ -10,9 +10,15 @@ import com.ctaljaar.router.broker.BrokerThread;
 
 public class BrokerThreadUtil {
 
-    public static void checkBrokerMessage(String brokerMessage, PrintWriter outputStream, BufferedReader brokerInput)
-            throws IOException {
-        if (brokerMessage.equalsIgnoreCase("list")) {
+    public static void checkBrokerMessage(String brokerMessage, PrintWriter outputStream, BufferedReader brokerInput,
+            String brokerThreadID) throws IOException {
+        System.out.println("Broker message = " + brokerMessage);
+
+        if(brokerMessage.equalsIgnoreCase("BrokerID")){
+            System.out.println(brokerThreadID);
+            outputStream.println(brokerThreadID);
+        }
+        else if (brokerMessage.equalsIgnoreCase("list")) {
             for (Connection connection : RouterGlobals.onlineBrokers) {
                 // Send the data to the Broker
                 outputStream.println("Broker: " + connection);
@@ -29,15 +35,12 @@ public class BrokerThreadUtil {
         } else if (brokerMessage.equalsIgnoreCase("buy") || brokerMessage.equalsIgnoreCase("sell")) {
             ArrayList<String> fixMessage = new ArrayList<>();
             fixMessage.add("BrokerID: " + BrokerThread.thisBroker.uniqueID);
-            
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 6; i++) {
                 String fixMessageInfo = brokerInput.readLine();
+                System.out.println(fixMessageInfo);
                 fixMessage.add(fixMessageInfo);
             }
-            // To get just the marketID
-
-            // String marketID = fixMessage.get(2).split(" ");
-            sendFixMessageToMarket(getMarketID(fixMessage.get(4)), fixMessage,outputStream);
+            sendFixMessageToMarket(getMarketID(fixMessage.get(5)), fixMessage, outputStream, brokerThreadID);
 
         } else if (brokerMessage.equalsIgnoreCase("exit")) {
             // Removes this broker from the online brokers
@@ -54,7 +57,8 @@ public class BrokerThreadUtil {
         System.out.println(RouterGlobals.onlineBrokers);
     }
 
-    static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage, PrintWriter brokerOutputStream) throws IOException {
+    static void sendFixMessageToMarket(String marketID, ArrayList<String> fixMessage, PrintWriter brokerOutputStream,
+            String brokerThreadID) throws IOException {
         if (marketID != null) {
             for (Connection markets : RouterGlobals.onlineMarkets) {
                 // Get the onlineMarket connections
@@ -63,7 +67,7 @@ public class BrokerThreadUtil {
                     PrintWriter marketOutputStream = new PrintWriter(markets.activeSocket.getOutputStream(), true);
                     // Send Query to the Market to tell it that you have a Query coming through
                     marketOutputStream.println("Query");
-                    for (int i = 0; i < 6; i++) {
+                    for (int i = 0; i < 7; i++) {
                         // Send the broker Fix message to the market
                         marketOutputStream.println(fixMessage.get(i));
                     }
@@ -71,7 +75,7 @@ public class BrokerThreadUtil {
             }
         } else {
             brokerOutputStream.println("error");
-            brokerOutputStream.println("This Market does not exist");
+            brokerOutputStream.println("This Market does not exist [Router ID = " + brokerThreadID + "]");
         }
     }
 

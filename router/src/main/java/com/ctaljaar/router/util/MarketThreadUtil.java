@@ -9,6 +9,7 @@ import com.ctaljaar.router.model.RouterGlobals;
 public class MarketThreadUtil {
 
     protected static String errorOutputStream = null;
+    protected static String IDOutputStream = null;
 
     // Very unlikely this works.
     // Function is attempting to find a Market in a Connection arraylist with a
@@ -19,17 +20,12 @@ public class MarketThreadUtil {
         System.out.println(RouterGlobals.onlineMarkets);
     }
 
-    public static void checkFixMessage(ArrayList<String> fixMessage) throws IOException {
-        /*
-         * There should be more Functions in the method
-         * 
-         * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         * 
-         * 
-         */
+    public static void checkFixMessage(ArrayList<String> fixMessage, String marketThreadID) throws IOException {
+        IDOutputStream = marketThreadID;
+
         // Loop through all the functions and breaks if there is an error
         // i is the amount of error checking methods there are
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             i = errorCheck(i, fixMessage);
         }
 
@@ -38,11 +34,11 @@ public class MarketThreadUtil {
     public static int errorCheck(int i, ArrayList<String> fixMessage) throws IOException {
         Boolean error = false;
         String brokerID[] = fixMessage.get(0).split(" ");
-        String action = fixMessage.get(1);
-        String instrument = fixMessage.get(2);
-        String quantity = fixMessage.get(3);
-        String market = fixMessage.get(4);
-        String price = fixMessage.get(5);
+        String checkSum = fixMessage.get(1);
+        String action = fixMessage.get(2);
+        String instrument = fixMessage.get(3);
+        String quantity = fixMessage.get(4);
+        String price = fixMessage.get(6);
 
         switch (i) {
             case 0:
@@ -52,18 +48,20 @@ public class MarketThreadUtil {
                 error = checkSumOfPrice(instrument, quantity, price, action);
                 break;
             case 2:
-                error = checkSum(instrument, quantity, action);
+                error = checkSumQuantity(instrument, quantity, action);
                 break;
-
+            case 3:
+                error = checkSum(brokerID[1], checkSum, action);
+                break;
             default:
                 System.out.println("Something went wrong!");
                 break;
         }
         if (error) {
             sendFixMessageToBroker(brokerID[1], error, fixMessage);
-            return i = 2;
+            return i = 3;
         }
-        if (i == 2) {
+        if (i == 3) {
             sendFixMessageToBroker(brokerID[1], error, fixMessage);
 
         }
@@ -77,13 +75,13 @@ public class MarketThreadUtil {
                 return false;
             }
         }
-        errorOutputStream = "This Stock does not exist in this Market";
+        errorOutputStream = "This Stock does not exist in this Market [Router ID = " + IDOutputStream + "]";
 
         return true;
     }
 
     // Check if the broker quantity is more than the market quantity
-    public static Boolean checkSum(String market, String quantity, String action) {
+    public static Boolean checkSumQuantity(String market, String quantity, String action) {
         String quantityValue[] = quantity.split(" ");
         for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
             if (market.equalsIgnoreCase(markets.stockName)) {
@@ -100,8 +98,19 @@ public class MarketThreadUtil {
                 }
             }
         }
-        errorOutputStream = "The Quantity you want of the stock is more than the Stock has";
+        errorOutputStream = "The Quantity you want of the stock is more than the Stock has [Router ID = "
+                + IDOutputStream + "]";
 
+        return true;
+    }
+
+    public static Boolean checkSum(String brokerID, String checkSum, String action) {
+        String checkSumID[] = checkSum.split(" ");
+        String actionSplit[] = action.split(" ");
+
+        if (checkSumID[0].equals(brokerID) && checkSumID[2].equals(actionSplit[1])) {
+            return false;
+        }
         return true;
     }
 
@@ -117,8 +126,9 @@ public class MarketThreadUtil {
                         int totalAmountDue = quantityInt * markets.sellPrice;
                         if (totalAmountDue == priceInt) {
                             return false;
-                        }else if (totalAmountDue < priceInt){
-                            errorOutputStream = "You are asking to much for this stock .The Sell price is "+markets.sellPrice+" per stock";
+                        } else if (totalAmountDue < priceInt) {
+                            errorOutputStream = "You are asking to much for this stock .The Sell price is "
+                                    + markets.sellPrice + " per stock [Router ID = " + IDOutputStream + "]";
                             return true;
 
                         }
@@ -126,8 +136,9 @@ public class MarketThreadUtil {
                         int totalAmountDue = quantityInt * markets.buyPrice;
                         if (totalAmountDue == priceInt) {
                             return false;
-                        }else if (totalAmountDue < priceInt){
-                            errorOutputStream = "You are paying to much for this stock .The Buy price is "+markets.sellPrice+" per stock";
+                        } else if (totalAmountDue < priceInt) {
+                            errorOutputStream = "You are paying to much for this stock .The Buy price is "
+                                    + markets.sellPrice + " per stock [Router ID = " + IDOutputStream + "]";
                             return true;
                         }
                     }
@@ -139,11 +150,12 @@ public class MarketThreadUtil {
                 }
             }
         }
-        if(action.equalsIgnoreCase("Action: Buy"))
-        errorOutputStream = "The Quantity that you want of the stock costs more than what you paid";
-        if(action.equalsIgnoreCase("Action: Sell"))
-        errorOutputStream = "The Amount you want for your stock is more than what it is worth";
-
+        if (action.equalsIgnoreCase("Action: Buy"))
+            errorOutputStream = "The Quantity that you want of the stock costs more than what you paid [Router ID = "
+                    + IDOutputStream + "]";
+        if (action.equalsIgnoreCase("Action: Sell"))
+            errorOutputStream = "The Amount you want for your stock is more than what it is worth [Router ID = "
+                    + IDOutputStream + "]";
 
         return true;
     }
@@ -166,11 +178,11 @@ public class MarketThreadUtil {
 
                     } else {
                         outputStream.println("Executed");
-
+                        outputStream.println(
+                                fixMessage.get(2) + " was Executed successfully [Router ID = " + IDOutputStream + "]");
                     }
                 }
             }
         }
     }
-
 }

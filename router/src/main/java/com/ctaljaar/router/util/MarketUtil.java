@@ -10,7 +10,7 @@ public class MarketUtil {
 	protected int sellPrice;
 	protected String marketName;
 
-	public MarketUtil(String uniqueID, String marketName,String stockName) {
+	public MarketUtil(String uniqueID, String marketName, String stockName) {
 		this.quantity = 50;
 		this.buyPrice = 100;
 		this.sellPrice = 50;
@@ -21,8 +21,8 @@ public class MarketUtil {
 
 	@Override
 	public String toString() {
-		return (marketName + "\nID: " + uniqueID + "\n" + "\n" +stockName + "\nBuy: " + buyPrice
-				+ "\nSell: " + sellPrice + "\nQuantity: " + String.valueOf(quantity)+"\n" );
+		return (marketName + "\nID: " + uniqueID + "\n" + "\n" + stockName + "\nBuy: " + buyPrice + "\nSell: "
+				+ sellPrice + "\nQuantity: " + String.valueOf(quantity) + "\n");
 	}
 
 	public String getStock() {
