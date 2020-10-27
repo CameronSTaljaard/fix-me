@@ -29,6 +29,8 @@ public class BrokerThread extends Thread {
 			// BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 			String brokerThreadID = RouterUtil.generateID();
+			outputStream.println("ID");
+			outputStream.println(brokerThreadID);
 			thisBroker = new Connection(brokerSocket, brokerThreadID);
 			// Adds the New Broker to the List of online Brokers
 			// System.out.println("Broker joined with ID: " + brokerThreadID);

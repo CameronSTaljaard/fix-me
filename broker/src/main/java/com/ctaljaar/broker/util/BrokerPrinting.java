@@ -2,6 +2,9 @@ package com.ctaljaar.broker.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.io.ObjectInputStream;
+import java.net.Socket;
 
 import com.ctaljaar.broker.Broker;
 
@@ -29,13 +32,13 @@ public class BrokerPrinting {
         while ((routerMessage = routerInput.readLine()) != null) {
             if (routerMessage.equalsIgnoreCase("End of list"))
                 break;
-            System.out.println(routerMessage);
+            System.out.println(routerMessage + "\n");
         }
         System.out.println("");
         System.out.println("-----------End of list---------");
     }
 
-    public static void printOnlineMarkets(BufferedReader routerInput) throws IOException {
+    public static void printOnlineMarkets(BufferedReader routerInput, Socket brokerSocket) throws IOException {
         String routerMessage;
 
         System.out.println("---------Online Markets-------");
@@ -44,11 +47,22 @@ public class BrokerPrinting {
         while ((routerMessage = routerInput.readLine()) != null) {
             if (routerMessage.equalsIgnoreCase("End of list"))
                 break;
-            System.out.println(routerMessage);
+            System.out.println(routerMessage + "\n");
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(brokerSocket.getInputStream());
+                ArrayList<String> stockList = (ArrayList<String>) objectInputStream.readObject();
+                if (stockList != null){
+                   for (String stock : stockList)
+                       System.out.println(stock);
+                }
+            } catch ( ClassNotFoundException e ) {
+                System.out.println("The socket for reading the object has problem");
+                e.printStackTrace();
+            }    
         }
-        System.out.println("-----------End of list---------");
+        System.out.println("\n-----------End of list---------");
     }
-
+   
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();

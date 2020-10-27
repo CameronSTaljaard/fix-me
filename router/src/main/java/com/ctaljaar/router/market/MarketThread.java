@@ -2,6 +2,9 @@ package com.ctaljaar.router.market;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -30,6 +33,9 @@ public class MarketThread extends Thread {
 			// Adds this market ID to the online Markets
 			RouterGlobals.onlineMarkets.add(thisMarketID);
 			BufferedReader marketInput = new BufferedReader(new InputStreamReader(marketSocket.getInputStream()));
+			PrintWriter outputStream = new PrintWriter(marketSocket.getOutputStream(), true);
+			outputStream.println("ID");
+			outputStream.println(marketID);
 			String marketMessage;
 
 			while (true) {
@@ -60,6 +66,15 @@ public class MarketThread extends Thread {
 						// Removes this broker from the online brokers
 						MarketThreadUtil.removeMarketFromOnlineList(thisMarket);
 						break;
+					}
+					else if (marketMessage.contains("Market:")){
+						Connection broker = RouterGlobals.onlineBrokers.get(0);
+						PrintWriter brokerOutputStream = new PrintWriter(broker.getSocket().getOutputStream(), true);
+						brokerOutputStream.println(marketMessage);
+						ObjectInputStream objectInputStream = new ObjectInputStream(marketSocket.getInputStream());
+						ObjectOutputStream objectOutputStream = new ObjectOutputStream(broker.getSocket().getOutputStream());
+						objectOutputStream.writeObject((ArrayList<String>) objectInputStream.readObject());
+						brokerOutputStream.println("End of List");
 					}
 				}
 			}

@@ -11,6 +11,10 @@ public class Connection {
 		this.uniqueID = uniqueID;
 	}
 
+	public Socket getSocket(){
+		return activeSocket;
+	}
+
 	@Override
 	public String toString() {
 		return (uniqueID);

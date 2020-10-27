@@ -4,54 +4,63 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.io.InputStreamReader;
+// import java.io.InputStreamReader;
 
 import com.ctaljaar.router.model.RouterGlobals;
 import com.ctaljaar.router.broker.BrokerThread;
 
 public class BrokerThreadUtil {
 
-    public static void checkBrokerMessage(String brokerMessage, PrintWriter outputStream, BufferedReader brokerInput,
-            String brokerThreadID) throws IOException {
-        System.out.println("Broker message = " + brokerMessage);
-
-        if (brokerMessage.equalsIgnoreCase("BrokerID")) {
-            System.out.println(brokerThreadID);
-            outputStream.println(brokerThreadID);
-        } else if (brokerMessage.equalsIgnoreCase("list")) {
-            for (Connection connection : RouterGlobals.onlineBrokers) {
-                // Send the data to the Broker
-                outputStream.println("Broker: " + connection);
-            }
-            // Sends this to the Broker if all the Online Brokers have been sent
-            outputStream.println("End of list");
-        } else if (brokerMessage.equalsIgnoreCase("markets")) {
-            for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
-                // Send the data to the Broker
-                outputStream.println(markets);
-            }
-            // Sends this to the Broker if all the Online Brokers have been sent
-            outputStream.println("End of list");
-        } else if (brokerMessage.equalsIgnoreCase("buy") || brokerMessage.equalsIgnoreCase("sell")) {
-            ArrayList<String> fixMessage = new ArrayList<>();
-            // fixMessage.add("BrokerID: " + BrokerThread.thisBroker.uniqueID);
-            for (int i = 0; i < 5; i++) {
-                String fixMessageInfo = brokerInput.readLine();
-                if (checkSum(fixMessageInfo, BrokerThread.thisBroker.uniqueID) == true) {
-                    System.out.println(fixMessageInfo);
-                    fixMessage.add(fixMessageInfo);
-                } else {
-                    System.out.println("The checkSum does not match! ");
+    public static void checkBrokerMessage(String brokerMessage, PrintWriter outputStream, BufferedReader brokerInput, String brokerThreadID) throws IOException {
+            if (brokerMessage.equalsIgnoreCase("markets")){
+                for (Connection market : RouterGlobals.onlineMarkets) {
+                    PrintWriter marketOutputStream = new PrintWriter(market.getSocket().getOutputStream(), true);
+                    BufferedReader marketInput = new BufferedReader(new InputStreamReader(market.getSocket().getInputStream()));
+                    // Send the data to the Broker
+                    marketOutputStream.println("markets");
                 }
             }
-            sendFixMessageToMarket(getMarketID(fixMessage.get(3)), fixMessage, outputStream, brokerThreadID);
+        System.out.println("Broker message = " + brokerMessage);
 
-        } else if (brokerMessage.equalsIgnoreCase("exit")) {
-            // Removes this broker from the online brokers
-            removeBrokerFromOnlineList(BrokerThread.thisBroker);
-            BrokerThread.thisBroker = null;
-        } else {
-            // System.out.println("Broker message = " + brokerMessage);
-        }
+        // if (brokerMessage.equalsIgnoreCase("BrokerID")) {
+        //     System.out.println(brokerThreadID);
+        //     outputStream.println(brokerThreadID);
+        // } else if (brokerMessage.equalsIgnoreCase("list")) {
+        //     for (Connection connection : RouterGlobals.onlineBrokers) {
+        //         // Send the data to the Broker
+        //         outputStream.println("Broker: " + connection);
+        //     }
+        //     // Sends this to the Broker if all the Online Brokers have been sent
+        //     outputStream.println("End of list");
+        // } else if (brokerMessage.equalsIgnoreCase("markets")) {
+        //     for (MarketUtil markets : RouterGlobals.onlineMarketsInfo) {
+        //         // Send the data to the Broker
+        //         outputStream.println(markets);
+        //     }
+        //     // Sends this to the Broker if all the Online Brokers have been sent
+        //     outputStream.println("End of list");
+        // } else if (brokerMessage.equalsIgnoreCase("buy") || brokerMessage.equalsIgnoreCase("sell")) {
+        //     ArrayList<String> fixMessage = new ArrayList<>();
+        //     // fixMessage.add("BrokerID: " + BrokerThread.thisBroker.uniqueID);
+        //     for (int i = 0; i < 5; i++) {
+        //         String fixMessageInfo = brokerInput.readLine();
+        //         if (checkSum(fixMessageInfo, BrokerThread.thisBroker.uniqueID) == true) {
+        //             System.out.println(fixMessageInfo);
+        //             fixMessage.add(fixMessageInfo);
+        //         } else {
+        //             System.out.println("The checkSum does not match! ");
+        //         }
+        //     }
+        //     sendFixMessageToMarket(getMarketID(fixMessage.get(3)), fixMessage, outputStream, brokerThreadID);
+
+        // } else if (brokerMessage.equalsIgnoreCase("exit")) {
+        //     // Removes this broker from the online brokers
+        //     removeBrokerFromOnlineList(BrokerThread.thisBroker);
+        //     BrokerThread.thisBroker = null;
+        // } else {
+        //     // System.out.println("Broker message = " + brokerMessage);
+        // }
     }
 
     private static Boolean checkSum(String message, String brokerID) {
