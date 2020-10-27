@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import com.ctaljaar.broker.Broker;
+import com.ctaljaar.broker.model.BrokerStock;
 
 public class BrokerUtil {
 
@@ -103,6 +105,19 @@ public class BrokerUtil {
     }
 
     public static Boolean addToExistingStock(ArrayList<String> fixMessage) {
+        if (Broker.brokerStocks1.get(fixMessage.get(1)) == null)
+            return true;
+        BrokerStock brokerStock = Broker.brokerStocks1.get(fixMessage.get(1));
+        int brokerQuantity1 = Integer.parseInt(fixMessage.get(2));
+        int brokerPrice1 = Integer.parseInt(brokerStock.getBrokerStockPrice());
+        int marketPrice1 = Integer.parseInt(fixMessage.get(4));
+        int marketQuantity1 = Integer.parseInt(brokerStock.getBrokerStockQuantity());
+        brokerStock.setBrokerStockPrice(Integer.toString(brokerPrice1 + marketPrice1));
+        brokerStock.setBrokerStockQuantity(Integer.toString(brokerQuantity1 + marketQuantity1));
+        //System.out.println("Executed");
+        //return false;
+
+
         for (int i = 0; i < Broker.brokerStocks.size(); i++) {
 
             if (Broker.brokerStocks.get(i).equalsIgnoreCase("Instrument: " + fixMessage.get(1))) {
@@ -138,7 +153,11 @@ public class BrokerUtil {
     }
 
     public static void addNewStock(ArrayList<String> fixMessage, BufferedReader routerInput) throws IOException {
+        //New
+        Broker.brokerStocks1.put(fixMessage.get(1), new BrokerStock(fixMessage.get(1), fixMessage.get(2), fixMessage.get(4)));
+        //System.out.println("Executed");
 
+        //Old
         Broker.brokerStocks.add("Instrument: " + fixMessage.get(1));
         Broker.brokerStocks.add("Quantity: " + fixMessage.get(2));
         Broker.brokerStocks.add("Market: " + fixMessage.get(3));
@@ -150,10 +169,10 @@ public class BrokerUtil {
     public static void sendFixMessage(PrintWriter outputStream, ArrayList<String> fixMessage, String brokerID) {
         if (fixMessage.size() == 5) {
             outputStream.println(createCheckSum(fixMessage.get(0), brokerID));
-            outputStream.println(createCheckSum(fixMessage.get(1),brokerID));
-            outputStream.println(createCheckSum(fixMessage.get(2),brokerID));
-            outputStream.println(createCheckSum(fixMessage.get(3),brokerID));
-            outputStream.println(createCheckSum(fixMessage.get(4),brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(1), brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(2), brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(3), brokerID));
+            outputStream.println(createCheckSum(fixMessage.get(4), brokerID));
         }
     }
 
@@ -171,7 +190,6 @@ public class BrokerUtil {
             outputStream.println(readLine);
             BrokerPrinting.clearScreen();
             ArrayList<String> fixMessage = BrokerUtil.printFixMessageOrder(readLine, terminalInput);
-
             sendFixMessage(outputStream, fixMessage, brokerID);
             // Router returns error if something went wrong
             String routerCheck = routerInput.readLine();
@@ -236,7 +254,7 @@ public class BrokerUtil {
             outputStream.println(readLine);
             // Prints the Online Brokers
             BrokerPrinting.clearScreen();
-            BrokerPrinting.printOnlineMarkets(routerInput);
+            BrokerPrinting.printOnlineMarkets(routerInput, Broker.brokerSocket);
         }
         if (readLine.equalsIgnoreCase("account")) {
             outputStream.println(readLine);
