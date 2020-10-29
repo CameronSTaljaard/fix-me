@@ -9,5 +9,4 @@ public class RouterGlobals {
 	public static ArrayList<Connection> onlineMarkets = new ArrayList<>();
 	public static ArrayList<MarketUtil> onlineMarketsInfo = new ArrayList<>();
 	public static Socket brokerSocket, marketSocket;
-	
 }

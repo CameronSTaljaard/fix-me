@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.io.IOException;
+
 import com.ctaljaar.router.util.*;
 import com.ctaljaar.router.model.RouterGlobals;
 
@@ -66,15 +68,20 @@ public class MarketThread extends Thread {
 						// Removes this broker from the online brokers
 						MarketThreadUtil.removeMarketFromOnlineList(thisMarket);
 						break;
-					}
-					else if (marketMessage.contains("Market:")){
+					} 
+					if (marketMessage.contains("Market:")){
 						Connection broker = RouterGlobals.onlineBrokers.get(0);
-						PrintWriter brokerOutputStream = new PrintWriter(broker.getSocket().getOutputStream(), true);
-						brokerOutputStream.println(marketMessage);
+						sendToBroker(broker, marketMessage);
 						ObjectInputStream objectInputStream = new ObjectInputStream(marketSocket.getInputStream());
 						ObjectOutputStream objectOutputStream = new ObjectOutputStream(broker.getSocket().getOutputStream());
 						objectOutputStream.writeObject((ArrayList<String>) objectInputStream.readObject());
-						brokerOutputStream.println("End of List");
+						sendToBroker(broker, "End of List");
+					}
+
+					if (marketMessage.contains("Executed") || marketMessage.contains("Rejected")){
+						//validate market ID
+						//send to broker
+						sendToBroker(RouterGlobals.onlineBrokers.get(0), marketMessage);
 					}
 				}
 			}
@@ -82,5 +89,10 @@ public class MarketThread extends Thread {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+
+	public static void sendToBroker(Connection broker, String message) throws IOException{
+		PrintWriter brokerOutputStream = new PrintWriter(broker.getSocket().getOutputStream(), true);
+		brokerOutputStream.println(message);
 	}
 }

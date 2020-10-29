@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 import com.ctaljaar.broker.Broker;
 import com.ctaljaar.broker.model.BrokerStock;
@@ -109,11 +111,12 @@ public class BrokerUtil {
             return true;
         BrokerStock brokerStock = Broker.brokerStocks1.get(fixMessage.get(1));
         int brokerQuantity1 = Integer.parseInt(fixMessage.get(2));
-        int brokerPrice1 = Integer.parseInt(brokerStock.getBrokerStockPrice());
+        int brokerPrice1 = Integer.parseInt(brokerStock.getPrice());
         int marketPrice1 = Integer.parseInt(fixMessage.get(4));
-        int marketQuantity1 = Integer.parseInt(brokerStock.getBrokerStockQuantity());
-        brokerStock.setBrokerStockPrice(Integer.toString(brokerPrice1 + marketPrice1));
-        brokerStock.setBrokerStockQuantity(Integer.toString(brokerQuantity1 + marketQuantity1));
+        int marketQuantity1 = Integer.parseInt(brokerStock.getQuantity());
+        brokerStock.setPrice(Integer.toString(brokerPrice1 + marketPrice1));
+        brokerStock.setQuantity(Integer.toString(brokerQuantity1 + marketQuantity1));
+        System.out.println(Broker.brokerStocks1.get(fixMessage.get(1)));
         //System.out.println("Executed");
         //return false;
 
@@ -176,6 +179,13 @@ public class BrokerUtil {
         }
     }
 
+    public static long calculateChecksum(String request){
+        byte[] bytes = request.getBytes();
+        Checksum crc32 = new CRC32();
+        crc32.update(bytes, 0, bytes.length);
+        return crc32.getValue();
+    }
+
     public static void runBrokerCommand(String readLine, PrintWriter outputStream, BufferedReader routerInput,
             BufferedReader terminalInput) throws IOException {
 
@@ -185,33 +195,41 @@ public class BrokerUtil {
             BrokerPrinting.clearScreen();
             BrokerPrinting.welcomeMessage();
         }
-        if (readLine.equalsIgnoreCase("buy")) {
-            String brokerID = getBrokerID(outputStream, routerInput);
-            outputStream.println(readLine);
-            BrokerPrinting.clearScreen();
+        if (readLine.equalsIgnoreCase("buy") || readLine.equalsIgnoreCase("sell")) {
+            // String brokerID = getBrokerID(outputStream, routerInput);
+            // outputStream.println(readLine);
+            // BrokerPrinting.clearScreen();
             ArrayList<String> fixMessage = BrokerUtil.printFixMessageOrder(readLine, terminalInput);
-            sendFixMessage(outputStream, fixMessage, brokerID);
+            //sendFixMessage(outputStream, fixMessage, Broker.id);
             // Router returns error if something went wrong
-            String routerCheck = routerInput.readLine();
+            System.out.println(fixMessage.get(0));
+            String routerCheck = "Order";//routerInput.readLine();
+            String request = Broker.id + "|";
+            for (String str : fixMessage){
+                request += str + "|";
+            }
+            request += calculateChecksum(request.substring(0,request.length() - 1));
+            System.out.println(request);
+            outputStream.println(request);
             BrokerPrinting.clearScreen();
+            String routerMessage = routerInput.readLine();
+            System.out.println("\n" + routerMessage);
             // Prints outcome of the Order for testing
-            if (routerCheck.equalsIgnoreCase("Order")) {
-                routerInputInfo = routerInput.readLine();
-                if (routerInputInfo.equalsIgnoreCase("Executed")) {
-                    addStock(fixMessage, routerInput);
-                    System.out.println(routerInput.readLine());
-
-                } else if (routerInputInfo.equalsIgnoreCase("Rejected")) {
-                    System.out.println("The market has rejected your request.");
-
-                    System.out.println(routerInput.readLine());
-                }
-            }
-            if (routerCheck.equalsIgnoreCase("error")) {
-                System.out.println(routerInput.readLine());
-            }
+            // if (routerCheck.equalsIgnoreCase("Order")) {
+            //     routerInputInfo = routerInput.readLine();
+            //     if (routerInputInfo.equalsIgnoreCase("Executed")) {
+            //         addStock(fixMessage, routerInput);
+            //         System.out.println(routerInput.readLine());
+            //     } else if (routerInputInfo.equalsIgnoreCase("Rejected")) {
+            //         System.out.println("The market has rejected your request.");
+            //         System.out.println(routerInput.readLine());
+            //     }
+            // }
+            // if (routerCheck.equalsIgnoreCase("error")) {
+            //     System.out.println(routerInput.readLine());
+            // }
         }
-        if (readLine.equalsIgnoreCase("sell")) {
+        else if (readLine.equalsIgnoreCase("sell")) {
             BrokerPrinting.clearScreen();
             String brokerID = getBrokerID(outputStream, routerInput);
             Boolean brokerHasStock = false;

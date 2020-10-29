@@ -5,23 +5,41 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.io.InputStreamReader;
-// import java.io.InputStreamReader;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 import com.ctaljaar.router.model.RouterGlobals;
 import com.ctaljaar.router.broker.BrokerThread;
 
 public class BrokerThreadUtil {
 
+    public static boolean validateChecksum(String request, long checksum){
+        byte[] bytes = request.getBytes();
+        Checksum crc32 = new CRC32();
+        crc32.update(bytes, 0, bytes.length);
+        if (crc32.getValue() == checksum)
+            return false;
+        return true;
+    }
+
     public static void checkBrokerMessage(String brokerMessage, PrintWriter outputStream, BufferedReader brokerInput, String brokerThreadID) throws IOException {
-            if (brokerMessage.equalsIgnoreCase("markets")){
-                for (Connection market : RouterGlobals.onlineMarkets) {
-                    PrintWriter marketOutputStream = new PrintWriter(market.getSocket().getOutputStream(), true);
-                    BufferedReader marketInput = new BufferedReader(new InputStreamReader(market.getSocket().getInputStream()));
-                    // Send the data to the Broker
-                    marketOutputStream.println("markets");
-                }
-            }
         System.out.println("Broker message = " + brokerMessage);
+        if (brokerMessage.equalsIgnoreCase("markets")){
+            // Ask market for a stocklist
+            sendToMarket(brokerMessage, RouterGlobals.onlineMarkets.get(0));
+        }
+
+        if (brokerMessage.contains("buy") || brokerMessage.contains("sell")){
+            //verify broker id
+            //validate checksum
+            String[] request = brokerMessage.split("\\|");
+            if (validateChecksum(brokerMessage.substring(0, brokerMessage.length() - (request[6].length() + 1)), Long.parseLong(request[6]))){
+                System.out.println("Invalid Checksum");
+                //send error to broker
+            }
+            //send request to market
+            sendToMarket(brokerMessage, RouterGlobals.onlineMarkets.get(0));
+        }
 
         // if (brokerMessage.equalsIgnoreCase("BrokerID")) {
         //     System.out.println(brokerThreadID);
@@ -61,6 +79,12 @@ public class BrokerThreadUtil {
         // } else {
         //     // System.out.println("Broker message = " + brokerMessage);
         // }
+    }
+
+    private static void sendToMarket(String brokerMessage, Connection market) throws IOException{
+        PrintWriter marketOutputStream = new PrintWriter(market.getSocket().getOutputStream(), true);
+        BufferedReader marketInput = new BufferedReader(new InputStreamReader(market.getSocket().getInputStream()));
+        marketOutputStream.println(brokerMessage);
     }
 
     private static Boolean checkSum(String message, String brokerID) {
