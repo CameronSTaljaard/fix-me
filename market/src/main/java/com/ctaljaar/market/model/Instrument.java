@@ -1,7 +1,11 @@
 package com.ctaljaar.market.model;
 
 import java.util.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class Instrument {
     protected String id;
     protected String name;
@@ -29,28 +33,12 @@ public class Instrument {
         return rand.nextInt(50) + 1;
     }
 
-    public String getID(){
-        return id;
-    }
-
-    public String getName(){
-        return name;
-    }
-
-    public int getPrice(){
-        return price;
-    }
-
-    public int getStock(){
-        return stock;
-    }
-
     public void sellStock(int sold){
         this.stock -= sold;
     }
 
     public void buyStock(int buy){
-        
+        this.stock += buy;
     }
 
     public Boolean checkStock(int need){

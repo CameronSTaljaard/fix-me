@@ -1,9 +1,14 @@
 package com.ctaljaar.broker.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class BrokerStock{
-    protected static String instrument;
-    protected static String quantity;
-    protected static String price;
+    protected String instrument;
+    protected String quantity;
+    protected String price;
 
     public BrokerStock(String instrument, String quantity, String price){
         this.instrument = instrument;
@@ -15,24 +20,4 @@ public class BrokerStock{
 	public String toString() {
 		return ("Instrument: " + instrument + " Quantity: " + quantity + " Price: " + price);
 	}
-
-    public String getBrokerStockPrice(){
-        return this.price;
-    }
-
-    public String getBrokerStockQuantity(){
-        return this.quantity;
-    }
-
-    public String getBrokerStockInstrument(){
-        return this.instrument;
-    }
-
-    public void setBrokerStockPrice(String price){
-        this.price = price;
-    }
-
-    public void setBrokerStockQuantity(String quantity){
-        this.quantity = quantity;
-    }
 }

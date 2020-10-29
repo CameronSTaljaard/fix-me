@@ -12,9 +12,10 @@ import com.ctaljaar.broker.model.BrokerStock;
 public class Broker {
 	public static ArrayList<String> brokerStocks = new ArrayList<>();
 	public static HashMap<String, BrokerStock> brokerStocks1 = new HashMap<String, BrokerStock>();
-	protected static String id;
-	static String ip = "localhost";
-	static int port = 5000;
+
+	public static String id;
+	public static String ip = "localhost";
+	public static int port = 5000;
 	public static Socket brokerSocket;
 
 	public static void main(String[] args) throws Exception {
