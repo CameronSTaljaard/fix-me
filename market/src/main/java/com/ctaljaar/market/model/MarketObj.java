@@ -41,10 +41,10 @@ public class MarketObj{
         return null;
     }
 
-    public ArrayList<String> constructStockList(){
-        ArrayList<String> stockList = new ArrayList<>();
+    public String constructStockList(){
+        String stockList = "";
         for (Instrument instrument : instruments){
-            stockList.add(instrument.toString());
+            stockList += instrument.toString() + "|";
         }
         return stockList;
     }
@@ -77,16 +77,13 @@ public class MarketObj{
         //validate instrument
         System.out.println();
         if (checkInstrument(name))
-            System.out.println("Rejected|Instrument does not exist");
-            //return "Rejected|Instrument does not exist";
+            return "Rejected|Instrument does not exist";
         //validate quantity
         if (checkQuantity(name, qty))
-            System.out.println("Rejected|insufficient quantity");
-            //return "Rejected|insufficient quantity";
+            return "Rejected|insufficient quantity";
         //validate price
         if (checkPrice(type, name, price, qty))
-            System.out.println("Rejected|Invalid price. Buying: Stock price times quantity. Selling: Stock price divided by 2, times quantity");
-            //return "Rejected|Invalid price. Buying: Stock price times quantity. Selling: Stock price divided by 2, times quantity";
+            return "Rejected|Invalid price. Buying: Stock price times quantity. Selling: Stock price divided by 2, times quantity";
         System.out.println("Executed");
         return "Executed";
     }

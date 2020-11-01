@@ -38,8 +38,7 @@ public class Market {
 
 			if (routerMessage.equalsIgnoreCase("markets")){
 				outputStream.println("Market: " + marketName);
-				ObjectOutputStream objectOutputStream = new ObjectOutputStream(marketSocket.getOutputStream());
-				objectOutputStream.writeObject(market.constructStockList());
+				outputStream.println(market.constructStockList());
 			}
 
 			if (routerMessage.contains("buy") || routerMessage.contains("sell")){

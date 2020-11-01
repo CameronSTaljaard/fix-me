@@ -72,9 +72,8 @@ public class MarketThread extends Thread {
 					if (marketMessage.contains("Market:")){
 						Connection broker = RouterGlobals.onlineBrokers.get(0);
 						sendToBroker(broker, marketMessage);
-						ObjectInputStream objectInputStream = new ObjectInputStream(marketSocket.getInputStream());
-						ObjectOutputStream objectOutputStream = new ObjectOutputStream(broker.getSocket().getOutputStream());
-						objectOutputStream.writeObject((ArrayList<String>) objectInputStream.readObject());
+						marketMessage = marketInput.readLine();
+						sendToBroker(broker, marketMessage);
 						sendToBroker(broker, "End of List");
 					}
 

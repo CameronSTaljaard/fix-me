@@ -1,6 +1,7 @@
 package com.ctaljaar.market.model;
 
 import java.util.*;
+import java.lang.Math;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,7 +27,11 @@ public class Instrument {
 	}
 
     private int randPrice(){
-        return rand.nextInt(150) + 1;
+        //get even number
+        double num = Math.ceil(rand.nextInt(150) + 1);
+        if(num % 2 == 1)
+            num++;
+        return (int) num;
     }
 
     private int randStock(){

@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.ctaljaar.broker.Broker;
+import com.ctaljaar.broker.model.BrokerStock;
 
 public class BrokerPrinting {
     public static void welcomeMessage() {
@@ -48,17 +51,14 @@ public class BrokerPrinting {
             if (routerMessage.equalsIgnoreCase("End of list"))
                 break;
             System.out.println(routerMessage + "\n");
-            try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(brokerSocket.getInputStream());
-                ArrayList<String> stockList = (ArrayList<String>) objectInputStream.readObject();
+           
+                //ObjectInputStream objectInputStream = new ObjectInputStream(brokerSocket.getInputStream());
+                String[] stockList = routerInput.readLine().split("\\|");
                 if (stockList != null){
                    for (String stock : stockList)
                        System.out.println(stock);
                 }
-            } catch ( ClassNotFoundException e ) {
-                System.out.println("The socket for reading the object has problem");
-                e.printStackTrace();
-            }    
+           
         }
         System.out.println("\n-----------End of list---------");
     }
@@ -69,32 +69,20 @@ public class BrokerPrinting {
     }
 
     public static void printMyAccount() {
-        int balance = 5000;
-
         System.out.println("-----------My Account---------");
         if (Broker.brokerStocks.size() == 0) {
             System.out.println(" ");
             System.out.println("          Your STOCKS");
-            System.out.println("             Empty");
+            if (Broker.brokerStocks1 == null)
+                System.out.println("             Empty");
+            else{
+                for (BrokerStock brokerStock: Broker.brokerStocks1.values()){
+                    System.out.println(brokerStock.toString());
+                    System.out.println(" ");
+                }
+            }
+            System.out.println("Balance: " + Broker.balance);
             System.out.println(" ");
-            System.out.println("Balance: " + balance);
-            System.out.println(" ");
-        }
-        for (int i = 0; i < Broker.brokerStocks.size(); i++) {
-            if (i == 0) {
-                System.out.println(" ");
-                System.out.println("          Your STOCKS");
-            }
-            if (Broker.brokerStocks.get(i).contains("Price:")) {
-                // Takes the price of the stocks and subtracts it from the Broker balance
-                balance = BrokerUtil.brokerBalance(balance, Broker.brokerStocks.get(i));
-            } else {
-                System.out.println(Broker.brokerStocks.get(i));
-            }
-            // Prints the Broker Balance
-            if (i == Broker.brokerStocks.size() - 1) {
-                System.out.println("Balance: " + balance);
-            }
         }
         System.out.println("------------- End ------------");
     }

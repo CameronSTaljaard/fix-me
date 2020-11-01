@@ -18,6 +18,6 @@ public class BrokerStock{
 
     @Override
 	public String toString() {
-		return ("Instrument: " + instrument + " Quantity: " + quantity + " Price: " + price);
+		return ("Instrument: " + instrument + "\n Quantity: " + quantity + "\n Price: " + price);
 	}
 }
