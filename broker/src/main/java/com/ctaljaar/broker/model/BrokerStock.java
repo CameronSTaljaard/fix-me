@@ -8,16 +8,14 @@ import lombok.Setter;
 public class BrokerStock{
     protected String instrument;
     protected String quantity;
-    protected String price;
 
-    public BrokerStock(String instrument, String quantity, String price){
+    public BrokerStock(String instrument, String quantity){
         this.instrument = instrument;
         this.quantity = quantity;
-        this.price = price;
     }
 
     @Override
 	public String toString() {
-		return ("Instrument: " + instrument + "\n Quantity: " + quantity + "\n Price: " + price);
+		return ("Instrument: " + instrument + "\nQuantity: " + quantity);
 	}
 }

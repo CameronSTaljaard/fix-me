@@ -15,7 +15,6 @@ public class BrokerListener implements Runnable {
 			while (true) {
 				// Makes connection with the new broker socket
 				RouterGlobals.brokerSocket = brokerServerSocket.accept();
-				System.out.println("New Broker joined");
 				// Creates a new Thread for the Broker
 				new BrokerThread(RouterGlobals.brokerSocket).start();
 				if (RouterGlobals.brokerSocket.isClosed()) {

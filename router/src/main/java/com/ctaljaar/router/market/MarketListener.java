@@ -14,7 +14,6 @@ public class MarketListener implements Runnable {
 			while (true) {
 				// Makes connection with the new broker socket
 				Socket marketSocket = marketServerSocket.accept();
-				System.out.println("New Market joined");
 				new MarketThread(marketSocket).start();
 				if (marketSocket.isClosed()) {
 					marketServerSocket.close();

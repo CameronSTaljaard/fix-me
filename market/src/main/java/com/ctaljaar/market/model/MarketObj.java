@@ -9,7 +9,7 @@ import com.ctaljaar.market.model.Instrument;
 
 public class MarketObj{
     ArrayList<Instrument> instruments = new ArrayList<>();
-    String[] intsrumentNames = {"Vodacom", "MTN", "LG", "Samsung", "Dell", "IBM"};
+    String[] intsrumentNames = {"vodacom", "mtn", "lg", "samsung", "dell", "ibm"};
 
     public MarketObj(){
         int i = 1;
@@ -22,15 +22,6 @@ public class MarketObj{
         Instrument inst = getInstrument(name);
         return inst.checkStock(qty);
     }
-
-    // public String checkInstrument(String name){
-    //     for (Instrument instrument : instruments){
-    //         if (instrument.getName().equalsIgnoreCase(name)){
-    //             return instrument;
-    //         }
-    //     }
-    //     return null;
-    // }
 
     public Instrument getInstrument(String name){
         for (Instrument instrument : instruments){
@@ -50,7 +41,7 @@ public class MarketObj{
     }
 
     public boolean checkInstrument(String name){
-        if (getInstrument(name) != null)
+        if (getInstrument(name.toLowerCase()) != null)
             return false;
         return true;
     }
@@ -75,27 +66,23 @@ public class MarketObj{
 
     public String validateRequest(String type, String name, int qty, int price){
         //validate instrument
-        System.out.println();
         if (checkInstrument(name))
-            return "Rejected|Instrument does not exist";
+            return "Rejected Instrument does not exist";
         //validate quantity
         if (checkQuantity(name, qty))
-            return "Rejected|insufficient quantity";
+            return "Rejected insufficient quantity";
         //validate price
         if (checkPrice(type, name, price, qty))
-            return "Rejected|Invalid price. Buying: Stock price times quantity. Selling: Stock price divided by 2, times quantity";
-        System.out.println("Executed");
+            return "Rejected Invalid price. Buying: Stock price times quantity. Selling: Stock price divided by 2, times quantity";
         return "Executed";
     }
 
     public void processRequest(String type, String name, int qty){
         Instrument instrument = getInstrument(name);
-        System.out.println(instrument.toString());
         //update market stock
         if (type.equalsIgnoreCase("buy"))
             instrument.sellStock(qty);
         else 
             instrument.buyStock(qty);
-        System.out.println(instrument.toString());
     }
 }

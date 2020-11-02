@@ -15,6 +15,10 @@ public class Connection {
 		return activeSocket;
 	}
 
+	public String getID(){
+		return uniqueID;
+	}
+
 	@Override
 	public String toString() {
 		return (uniqueID);

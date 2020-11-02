@@ -9,6 +9,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 import com.ctaljaar.router.util.*;
 import com.ctaljaar.router.model.RouterGlobals;
@@ -28,9 +31,8 @@ public class MarketThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			MarketUtil thisMarket = null;
 			String marketID = RouterUtil.generateID();
-			// System.out.println("Market joined with ID: " + marketID);
+			System.out.println("Market joined with ID: " + marketID);
 			Connection thisMarketID = new Connection(marketSocket, marketID);
 			// Adds this market ID to the online Markets
 			RouterGlobals.onlineMarkets.add(thisMarketID);
@@ -45,44 +47,32 @@ public class MarketThread extends Thread {
 				if (marketMessage != null) {
 					if (marketMessage.contains("Market start")) {
 						String marketName = marketInput.readLine();
-						String stockName = marketInput.readLine();
-
-						// Creates the market info
-						thisMarket = new MarketUtil(marketID, marketName, stockName);
-						// Adds the instance to the onlineMarketInfo array
-						RouterGlobals.onlineMarketsInfo.add(thisMarket);
-					} else if (marketMessage.equalsIgnoreCase("Query")) {
-
-						ArrayList<String> fixMessage = new ArrayList<>();
-
-						for (int i = 0; i < 5; i++) {
-							// add fix message from market to an arrayList
-							String info = marketInput.readLine();
-							fixMessage.add(info);
-							// System.out.println(info);
-						}
-						MarketThreadUtil.checkFixMessage(fixMessage, marketID);
-						// The market has the broker message now so do error checking here
-
+						RouterGlobals.markets.put(marketName.toLowerCase(), thisMarketID);
 					} else if (marketMessage.equalsIgnoreCase("exit")) {
 						// Removes this broker from the online brokers
-						MarketThreadUtil.removeMarketFromOnlineList(thisMarket);
+						//MarketThreadUtil.removeMarketFromOnlineList(thisMarket);
 						break;
 					} 
 					if (marketMessage.contains("Market:")){
-						Connection broker = RouterGlobals.onlineBrokers.get(0);
-						sendToBroker(broker, marketMessage);
-						marketMessage = marketInput.readLine();
-						sendToBroker(broker, marketMessage);
-						sendToBroker(broker, "End of List");
+						String[] request = marketMessage.split("\\*");
+						String brokerID = request[3];
+						sendToBroker(RouterGlobals.getBrokerSocket(brokerID), request[1] + "*" + request[2]);
+					}
+
+					if (marketMessage.contains("End of List")){
+						String[] request = marketMessage.split("\\|");
+						sendToBroker(RouterGlobals.getBrokerSocket(request[1]), request[0]);
 					}
 
 					if (marketMessage.contains("Executed") || marketMessage.contains("Rejected")){
-						//validate market ID
 						//send to broker
-						sendToBroker(RouterGlobals.onlineBrokers.get(0), marketMessage);
+						System.out.println("Market message: " + marketMessage);
+						String[] request = marketMessage.split("\\|");
+						if (validateChecksum(request[0] + "|" + request[1] + "|" + request[2], Long.parseLong(request[3])))
+							System.out.println("Checksum invalid");
+						sendToBroker(RouterGlobals.getBrokerSocket(request[2]), request[0] + "|" + request[1]);
 					}
-				}
+				}  
 			}
 			marketSocket.close();
 		} catch (Exception e) {
@@ -94,4 +84,13 @@ public class MarketThread extends Thread {
 		PrintWriter brokerOutputStream = new PrintWriter(broker.getSocket().getOutputStream(), true);
 		brokerOutputStream.println(message);
 	}
+
+	public static boolean validateChecksum(String request, long checksum){
+        byte[] bytes = request.getBytes();
+        Checksum crc32 = new CRC32();
+        crc32.update(bytes, 0, bytes.length);
+        if (crc32.getValue() == checksum)
+            return false;
+        return true;
+    }
 }

@@ -35,36 +35,43 @@ public class BrokerUtil {
                 if (checkBrokerStock(instrument, qty))
                     return;
             }
-            if (checkBalance(price * qty))
+            if (checkBalance(price))
                 return;
-            String request = Broker.id + "|";
-            for (String str : fixMessage){
-                request += str + "|";
-            }
-            request += calculateChecksum(request.substring(0,request.length() - 1));
-            System.out.println(request); //remove
+
+            String request = constructRequest(Broker.id, fixMessage);
             outputStream.println(request);
-            BrokerPrinting.clearScreen();
+
             String routerMessage = routerInput.readLine();
             //update broker stock and balance
-            updateStock(fixMessage);
-            updateBalance(price, type);
+            if (routerMessage.contains("Executed")){
+                updateStock(fixMessage);
+                updateBalance(price, type);
+            }
+            BrokerPrinting.clearScreen();
             System.out.println("\n" + routerMessage);
         }
     
         if (readLine.equalsIgnoreCase("markets")) {
-            outputStream.println(readLine);
+            outputStream.println(Broker.id + "|" + readLine);
             // Prints the Online Brokers
             BrokerPrinting.clearScreen();
             BrokerPrinting.printOnlineMarkets(routerInput, Broker.brokerSocket);
         }
 
         if (readLine.equalsIgnoreCase("account")) {
-            outputStream.println(readLine);
             BrokerPrinting.clearScreen();
             // Prints the Online Brokers
             BrokerPrinting.printMyAccount();
         }
+    }
+
+    public static String constructRequest(String brokerID, ArrayList<String> fixMessage){
+        String request = Broker.id + "|";
+        for (String str : fixMessage){
+            request += str + "|";
+        }
+        request += calculateChecksum(request.substring(0,request.length() - 1));
+        return request;
     }
 
     public static ArrayList<String> getFixMessage(String action, BufferedReader terminalInput)
@@ -79,11 +86,15 @@ public class BrokerUtil {
     }
 
     public static String checkInput(BufferedReader terminalInput, String get) throws IOException {
-        System.out.print("\n" + get + ": ");
-        String ret = terminalInput.readLine();
-        while (ret.isEmpty()) {
+        String ret = "";
+        while (ret.isEmpty() || ret.equals("0")) {
             System.out.print("\n" + get + ": ");
             ret = terminalInput.readLine();
+            if (get.equalsIgnoreCase("Quantity") || get.equalsIgnoreCase("Price")){
+                if (!ret.matches("\\d+")){
+                    ret = "";
+                }
+            }
         }
         return ret;
     }
@@ -94,9 +105,6 @@ public class BrokerUtil {
             System.out.println("Intrument does not exists");
             return true;
         }
-        System.out.println(brokerStock.getQuantity()); //remove
-        System.out.println(qty); //remove
-        System.out.println(Integer.parseInt(brokerStock.getQuantity()) - qty); //remove
         if ((Integer.parseInt(brokerStock.getQuantity()) - qty) < 0){
             System.out.println("You do not have sufficient quantity");
             return true;
@@ -136,21 +144,17 @@ public class BrokerUtil {
 
     public static void updateStock(ArrayList<String> fixMessage) throws IOException {
         if (Broker.brokerStocks1.get(fixMessage.get(1)) == null){
-            Broker.brokerStocks1.put(fixMessage.get(1), new BrokerStock(fixMessage.get(1), fixMessage.get(2), fixMessage.get(4)));
-            System.out.println(Broker.brokerStocks1.get(fixMessage.get(1)));  //remove
+            Broker.brokerStocks1.put(fixMessage.get(1), new BrokerStock(fixMessage.get(1), fixMessage.get(2)));
         }
         else {
             BrokerStock brokerStock = Broker.brokerStocks1.get(fixMessage.get(1));
             int requestQty = Integer.parseInt(fixMessage.get(2));
             int brokerQty = Integer.parseInt(brokerStock.getQuantity());
             int qty = (fixMessage.get(0).equalsIgnoreCase("buy")) ? brokerQty + requestQty : brokerQty - requestQty;
-            System.out.println("qty: " + qty); //remove
             if (qty == 0)
                 Broker.brokerStocks1.remove(fixMessage.get(1));
             else 
                 brokerStock.setQuantity(Integer.toString(qty));
-            System.out.println(Broker.brokerStocks1.get(fixMessage.get(1))); //remove
-            //System.out.println("Executed");
         }
     }
 }

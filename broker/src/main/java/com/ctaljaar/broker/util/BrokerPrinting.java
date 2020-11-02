@@ -50,17 +50,17 @@ public class BrokerPrinting {
         while ((routerMessage = routerInput.readLine()) != null) {
             if (routerMessage.equalsIgnoreCase("End of list"))
                 break;
-            System.out.println(routerMessage + "\n");
-           
-                //ObjectInputStream objectInputStream = new ObjectInputStream(brokerSocket.getInputStream());
-                String[] stockList = routerInput.readLine().split("\\|");
-                if (stockList != null){
-                   for (String stock : stockList)
-                       System.out.println(stock);
+            String[] list = routerMessage.split("\\*");
+            System.out.println(list[0] + "\n");
+            list = list[1].split("\\|");
+                if (list != null){
+                    for (String stock : list)
+                        System.out.println(stock);
+                    System.out.println("\n");
                 }
            
         }
-        System.out.println("\n-----------End of list---------");
+        System.out.println("-----------End of list---------");
     }
    
     public static void clearScreen() {
