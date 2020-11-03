@@ -46,10 +46,7 @@ public class BrokerThreadUtil {
                     System.out.println("Invalid Checksum");
                     //send error to broker
                 }
-                Socket market = RouterGlobals.markets.get(request[4].toLowerCase()).getSocket();
-                if (market.getInetAddress().isReachable(5))
-                    outputStream.println("Rejected market does not exist");
-                if  (RouterGlobals.markets.get(request[4].toLowerCase()) == null){
+                if (RouterGlobals.markets.get(request[4].toLowerCase()) == null){
                     outputStream.println("Rejected market does not exist");
                 }
                 else {
