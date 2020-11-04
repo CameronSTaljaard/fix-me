@@ -10,7 +10,7 @@ public class Router {
 		brokerListener.start();
 		Thread marketListener = new Thread(new MarketListener());
 		marketListener.start();
-
+		System.out.println("Router Started");
 		while (true) {
 		}
 	}

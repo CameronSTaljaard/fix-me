@@ -26,6 +26,7 @@ public class Market {
 		System.out.println("What is the market name?");
 		readLine = terminalInput.readLine();
 		marketName = readLine;
+		System.out.println("Market Started");
 		outputStream.println(readLine);
 
 		MarketObj market = new MarketObj();
